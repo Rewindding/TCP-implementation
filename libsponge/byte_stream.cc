@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
+#include <deque>
 
 // Dummy implementation of a flow-controlled in-memory byte stream.
 
@@ -55,7 +56,7 @@ string ByteStream::peek_output(const size_t len) const {
 //! \param[in] len bytes will be removed from the output side of the buffer
 void ByteStream::pop_output(const size_t len) { 
     if(len>que.size()) return;
-    for(int i=0;i<len;++i){
+    for(size_t i=0;i<len;++i){
         que.pop_front();
     }
     bytes_readed+=len;
