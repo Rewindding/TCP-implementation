@@ -15,6 +15,7 @@ void get_URL(const string &host, const string &path) {
     string request="GET "+path+" HTTP/1.1\r\nHost: "+host+"\r\n\r\n";
     socket.write(request,true);
     socket.shutdown(SHUT_WR);
+    //这里立刻调用shutdown的目的？此时数据已经拿到了吗？
     while(!socket.eof()){
         string str=socket.read();
         cout<<str<<'\n';
@@ -27,8 +28,8 @@ void get_URL(const string &host, const string &path) {
     // Then you'll need to print out everything the server sends back,
     // (not just one call to read() -- everything) until you reach
     // the "eof" (end of file).
-
-
+    socket.close();
+    //shutdown 和 close 有什么区别？
     //cerr << "Warning: get_URL() has not been implemented yet.\n";
 }
 
