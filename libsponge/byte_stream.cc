@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
-#include <deque>
 
 // Dummy implementation of a flow-controlled in-memory byte stream.
 

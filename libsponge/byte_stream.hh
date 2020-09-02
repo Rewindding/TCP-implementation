@@ -17,7 +17,7 @@ class ByteStream {
   private:
     // Your code here -- add private members as necessary.
     size_t capacity,bytes_readed,bytes_writed;
-    deque<char> que;
+    std::deque<char> que;
     bool inputing;//mark if write() is running
     bool _error{};  //!< Flag indicating that the stream suffered an error.
 
