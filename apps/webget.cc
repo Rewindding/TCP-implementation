@@ -13,7 +13,7 @@ void get_URL(const string &host, const string &path) {
     Address address=Address(host,"http");
     socket.connect(address);
     string request="GET "+path+" HTTP/1.1\r\nHost: "+host+"\r\n\r\n";
-    socket.write(request,true);
+    socket.write(request);
     socket.shutdown(SHUT_WR);
     //这里立刻调用shutdown的目的？此时数据已经拿到了吗？
     while(!socket.eof()){
