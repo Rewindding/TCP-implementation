@@ -18,7 +18,7 @@ void get_URL(const string &host, const string &path) {
     //这里立刻调用shutdown的目的？此时数据已经拿到了吗？
     while(!socket.eof()){
         string str=socket.read();
-        cout<<str<<'\n';
+        cout<<str;
     }
     
     // You will need to connect to the "http" service on
