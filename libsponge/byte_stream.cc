@@ -68,7 +68,7 @@ bool ByteStream::buffer_empty() const {
     return que.size()==0; 
 }
 
-bool ByteStream::eof() const { return false; }
+bool ByteStream::eof() const { return input_ended()&&buffer_empty(); }
 
 size_t ByteStream::bytes_written() const {
     return bytes_writed; 
