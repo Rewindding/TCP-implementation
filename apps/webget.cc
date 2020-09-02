@@ -12,7 +12,7 @@ void get_URL(const string &host, const string &path) {
     TCPSocket socket=TCPSocket();
     Address address=Address(host,"http");
     socket.connect(address);
-    string request="GET "+path+" HTTP/1.1\r\nHost: "+host+"\r\n";
+    string request="GET "+path+" HTTP/1.1\r\nHost: "+host+"\r\n\r\n";
     socket.write(request,true);
     while(!socket.eof()){
         string str=socket.read();
@@ -28,7 +28,7 @@ void get_URL(const string &host, const string &path) {
     // the "eof" (end of file).
 
 
-    cerr << "Warning: get_URL() has not been implemented yet.\n";
+    //cerr << "Warning: get_URL() has not been implemented yet.\n";
 }
 
 int main(int argc, char *argv[]) {
