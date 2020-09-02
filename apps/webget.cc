@@ -18,7 +18,7 @@ void get_URL(const string &host, const string &path) {
         string str=socket.read();
         cout<<str<<'\n';
     }
-    socket.shutdown();
+    socket.shutdown(SHUT_WR);
     // You will need to connect to the "http" service on
     // the computer whose name is in the "host" string,
     // then request the URL path given in the "path" string.
