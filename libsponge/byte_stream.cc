@@ -80,7 +80,7 @@ bool ByteStream::buffer_empty() const {
 bool ByteStream::eof() const { return false; }
 
 size_t ByteStream::bytes_written() const {
-    return que.size(); 
+    return bytes_writed; 
 }
 
 size_t ByteStream::bytes_read() const { 
