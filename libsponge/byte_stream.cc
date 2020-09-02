@@ -16,19 +16,16 @@ void DUMMY_CODE(Targs &&... /* unused */) {}
 
 using namespace std;
 
-ByteStream::ByteStream(const size_t cap):capacity(cap),bytes_readed(0),bytes_writed(0),que(),inputing(false){ 
+ByteStream::ByteStream(const size_t cap):capacity(cap),bytes_readed(0),bytes_writed(0),que(),end_input_(false){ 
     //DUMMY_CODE(capacity);
-    que.clear(); 
 }
 
 size_t ByteStream::write(const string &data) {
     size_t size = que.size();
     int cnt=min(data.size(),capacity-size);
-    inputing=true;
     for(int i=0;i<cnt;++i){
         que.push_back(data[i]);
     }
-    inputing=false;
     bytes_writed+=max(cnt,0);
     return cnt>=0?cnt:0;
 }
@@ -37,35 +34,30 @@ size_t ByteStream::write(const string &data) {
 string ByteStream::peek_output(const size_t len) const {
     //如果len大于了size，做什么操作？没有明确要求
     string res;
-    const size_t size=que.size();
+    size_t l=min(que.size(),len);
+    for(size_t i=0;i<len;++i){
+        res+=que[i];
+    }
     //在const函数中调用了非const函数，会出现不兼容的类型限定符错误
-    if(len>size){
-        //set_error();
-    }
-    else{
-        for(size_t i=0;i<len;++i){
-            res+=que[i];
-        }
-    }
-    
     return res;
 }
 
 //! \param[in] len bytes will be removed from the output side of the buffer
 void ByteStream::pop_output(const size_t len) { 
-    if(len>que.size()) return;
-    for(size_t i=0;i<len;++i){
+    size_t l=min(len,que.size());
+    for(size_t i=0;i<l;++i){
         que.pop_front();
     }
-    bytes_readed+=len;
+    bytes_readed+=l;
 }
 
 void ByteStream::end_input() {
     //wtf?? what should i do here?
+    end_input_=1;
 }
 
 bool ByteStream::input_ended() const { 
-    return !inputing;
+    return end_input_;
 }
 
 size_t ByteStream::buffer_size() const { 
