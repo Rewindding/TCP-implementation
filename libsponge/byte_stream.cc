@@ -16,8 +16,7 @@ void DUMMY_CODE(Targs &&... /* unused */) {}
 
 using namespace std;
 
-ByteStream::ByteStream(const size_t capacity):capacity(capacity),inputing(false)
-,bytes_readed(0),bytes_writed(0){ 
+ByteStream::ByteStream(const size_t cap):capacity(cap),bytes_readed(0),bytes_writed(0),que(),inputing(false){ 
     //DUMMY_CODE(capacity);
     que.clear(); 
 }
@@ -44,7 +43,7 @@ string ByteStream::peek_output(const size_t len) const {
         //set_error();
     }
     else{
-        for(int i=0;i<len;++i){
+        for(size_t i=0;i<len;++i){
             res+=que[i];
         }
     }
