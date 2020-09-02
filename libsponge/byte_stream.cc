@@ -35,7 +35,7 @@ string ByteStream::peek_output(const size_t len) const {
     //如果len大于了size，做什么操作？没有明确要求
     string res;
     size_t l=min(que.size(),len);
-    for(size_t i=0;i<len;++i){
+    for(size_t i=0;i<l;++i){
         res+=que[i];
     }
     //在const函数中调用了非const函数，会出现不兼容的类型限定符错误
