@@ -66,4 +66,4 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
 //这个的意思到底要返回个啥？是当前窗口中byte的总数，还是有序byte的总数？ 还是无序byte的总数？
 size_t StreamReassembler::unassembled_bytes() const { return unassembled_cnt; }
 
-bool StreamReassembler::empty() const { unassembled_cnt==0; }
+bool StreamReassembler::empty() const {return unassembled_cnt==0; }
