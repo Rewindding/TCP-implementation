@@ -22,7 +22,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     if(eof) last_byte_num=data_end_index;
     if(index-rcv_base>=_capacity) return;//out of window bound;
     else if(data_end_index<next_seq) return;//completely duplicate
-    size_t start_ind=max(index-rcv_base,next_seq);
+    size_t start_ind=max(index-rcv_base,next_seq-rcv_base);
     size_t len=min(_capacity-start_ind,data.size());//max length that could be writed
     //index kills !!!
     size_t zero=0;
