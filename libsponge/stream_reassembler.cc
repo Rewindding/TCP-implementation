@@ -46,7 +46,7 @@ void StreamReassembler::trans_data(){
     rcv_base+=writed;
     next_seq=rcv_base;
     unassembled_cnt-=writed;
-    for(int i=0;i<writed;++i){
+    for(size_t i=0;i<writed;++i){
         window.pop_front();
         window.push_back(' ');
         received.pop_front();
