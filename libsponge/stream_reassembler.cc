@@ -25,7 +25,8 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     size_t start_ind=max(index-rcv_base,next_seq);
     size_t len=min(_capacity-start_ind,data.size());//max length that could be writed
     //index kills !!!
-    for(size_t i=start_ind,k=max({0},next_seq-index);i-start_ind<len;++i,++k){
+    size_t zero=0;
+    for(size_t i=start_ind,k=max(zero,next_seq-index);i-start_ind<len;++i,++k){
         if(!received[i]){
             window[i]=data[k];
             received[i]=true;
