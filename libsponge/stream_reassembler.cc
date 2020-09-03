@@ -18,6 +18,10 @@ StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity),
 //! possibly out-of-order, from the logical stream, and assembles any newly
 //! contiguous substrings and writes them into the output stream in order.
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
+    /**
+     * 以为只有按序到达的时候才需要把数据交付上层，但是，上层阻塞时候，没有交付成功，下一次无论如何都要重试，所以每次都要尝试交付信息给上层
+    */
+    trans_data();//先调用一次，可能出现窗口满了，但是out_put还能写
     size_t data_end_index=index+data.size()-1;
     if(eof) last_byte_num=data_end_index;
     if(index-rcv_base>=_capacity) return;//out of window bound;
@@ -34,9 +38,6 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
         }
     }
     trans_data();
-    /**
-     * 以为只有按序到达的时候才需要把数据交付上层，但是，上层阻塞时候，没有交付成功，下一次无论如何都要重试，所以每次都要尝试交付信息给上层
-    */
    if(rcv_base==last_byte_num+1){
        _output.end_input();
    }
