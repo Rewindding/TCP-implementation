@@ -51,6 +51,9 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
         unassembled_cnt-=writed;
         rcv_base+=writed;
         next_seq+=len;
+        if(rcv_base==last_byte_num+1){
+            _output.end_input();
+        }
     }
     else{//out of order
         size_t len=min(_capacity-index,data.size());
