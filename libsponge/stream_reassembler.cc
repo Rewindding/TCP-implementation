@@ -33,12 +33,15 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
             if(!received[i]){
                 window[i]=data[k];
                 received[i]=true;
-                unassembled_cnt++;
             }
+            else unassembled_cnt--;
         }
         ordered_seq+=data.substr(0,len);
         size_t end=start+len-1;
-        while(end+1<_capacity&&received[end+1])  ordered_seq+=window[++end];
+        while(end+1<_capacity&&received[end+1])  {
+            ordered_seq+=window[++end];
+            unassembled_cnt--;
+        }
         size_t writed = _output.write(ordered_seq);
         for(size_t i=0;i<writed;++i){//shrink window
             window.pop_front();
