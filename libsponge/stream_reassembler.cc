@@ -25,7 +25,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     size_t data_end_index=index+data.size()-1;
     if(eof) last_byte_num=data_end_index;
     if(index-rcv_base>=_capacity) return;//out of window bound;
-    else if(data_end_index<next_seq) return;//completely duplicate
+    //else if(data_end_index<next_seq) return;//completely duplicate
     size_t zero=0;
     size_t start_index=index-rcv_base;
     size_t offset=max(zero,next_seq-index);//how many bytes that already writed
@@ -46,7 +46,8 @@ void StreamReassembler::trans_data(){
     size_t len=0;
     string data;
     while(len<_capacity&&received[len]) {
-        data+=window[len++];
+        data+=window[len];
+        ++len;
     }
     size_t writed=_output.write(data);
     next_seq=rcv_base+len;
