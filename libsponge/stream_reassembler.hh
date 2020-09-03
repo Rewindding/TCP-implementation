@@ -5,16 +5,20 @@
 
 #include <cstdint>
 #include <string>
-
+#include <deque>
 //! \brief A class that assembles a series of excerpts from a byte stream (possibly out of order,
 //! possibly overlapping) into an in-order byte stream.
 class StreamReassembler {
   private:
     // Your code here -- add private members as necessary.
-
     ByteStream _output;  //!< The reassembled in-order byte stream
     size_t _capacity;    //!< The maximum number of bytes
-
+    size_t rcv_base;    //the start num of current window
+    size_t next_seq;    //the next expected byte num
+    size_t unassembled_cnt;
+    size_t last_byte_num;//the number of last byte
+    std::deque<char> window;//how to represent that the byte is unreceived?
+    std::deque<bool> received;//indicate which num of byte has been received
   public:
     //! \brief Construct a `StreamReassembler` that will store up to `capacity` bytes.
     //! \note This capacity limits both the bytes that have been reassembled,
