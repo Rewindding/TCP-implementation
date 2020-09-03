@@ -19,6 +19,7 @@ class StreamReassembler {
     size_t last_byte_num;//the number of last byte
     std::deque<char> window;//how to represent that the byte is unreceived?
     std::deque<bool> received;//indicate which num of byte has been received
+    void trans_data();
   public:
     //! \brief Construct a `StreamReassembler` that will store up to `capacity` bytes.
     //! \note This capacity limits both the bytes that have been reassembled,

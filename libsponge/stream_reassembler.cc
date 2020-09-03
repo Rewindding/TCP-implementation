@@ -22,48 +22,35 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     if(eof) last_byte_num=data_end_index;
     if(index-rcv_base>=_capacity) return;//out of window bound;
     else if(data_end_index<next_seq) return;//completely duplicate
-    else if(index<=next_seq){//in order
-        size_t start=next_seq-rcv_base;//first byte index of window start to write
-        size_t len=min(_capacity-start,data.size());//max bytes that could be writed
-        string ordered_seq;
-        for(size_t i=0;i<start;++i){
-            ordered_seq+=window[i];
-        }
-        for(size_t i=start,k=0;k<len;++i,++k){
-            if(!received[i]){
-                window[i]=data[k];
-                received[i]=true;
-                ++unassembled_cnt;
-            }
-        }
-        ordered_seq+=data.substr(0,len);
-        size_t end=start+len-1;
-        while(end+1<_capacity&&received[end+1])  {
-            ordered_seq+=window[++end];
-        }
-        size_t writed = _output.write(ordered_seq);
-        for(size_t i=0;i<writed;++i){//shrink window
-            window.pop_front();
-            window.push_back(' ');
-            received.pop_front();
-            received.push_back(false);
-        }
-        unassembled_cnt-=writed;
-        rcv_base+=writed;
-        next_seq+=len;
-        if(rcv_base==last_byte_num+1){
-            _output.end_input();
+    size_t start_ind=max(index-rcv_base,next_seq);
+    size_t len=min(_capacity-start_ind,data.size());
+    for(size_t i=start_ind,k=0;k<len;++i,++k){
+        if(!received[i]){
+            window[i]=data[k];
+            received[i]=true;
+            ++unassembled_cnt;
         }
     }
-    else{//out of order
-        size_t len=min(_capacity-index,data.size());
-        for(size_t i=index,k=0;k<len;++i,++k){
-            if(!received[i]){
-                window[i]=data[k];
-                received[i]=true;
-                ++unassembled_cnt;
-            }
-        }
+    trans_data();
+    /**
+     * 以为只有按序到达的时候才需要把数据交付上层，但是，上层阻塞时候，没有交付成功，下一次无论如何都要重试，所以每次都要尝试交付信息给上层
+    */
+}
+void StreamReassembler::trans_data(){
+    size_t len=0;
+    string data;
+    while(len<_capacity&&received[len]) {
+        data+=window[len++];
+    }
+    size_t writed=_output.write(data);
+    rcv_base+=writed;
+    next_seq=rcv_base;
+    unassembled_cnt-=writed;
+    for(int i=0;i<writed;++i){
+        window.pop_front();
+        window.push_back(' ');
+        received.pop_front();
+        received.push_back(false);
     }
 }
 //这个的意思到底要返回个啥？是当前窗口中byte的总数，还是有序byte的总数？ 还是无序byte的总数？
