@@ -20,9 +20,9 @@ StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity),
 //! contiguous substrings and writes them into the output stream in order.
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
     size_t last=index+data.size();
-    if(_capacity==65123){
-        cout<<"called,data: "<<data<<" index:"<<index<<" ,eof: "<<eof<<"\n";
-    }
+    // if(_capacity==65123){
+    //     cout<<"called,data: "<<data<<" index:"<<index<<" ,eof: "<<eof<<"\n";
+    // }
     if(eof){
         last_byte_num=last;
         if(rcv_base==last_byte_num){
@@ -30,7 +30,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
         }//最后一个报文，可能是空的
     }
     //size_t没有负数，减法运算得到负数的时候直接溢出！！！
-    if(last-1<rcv_base||index>=_capacity+rcv_base) {
+    if(last<rcv_base+1||index>=_capacity+rcv_base||data.size()<=0) {
         return;
     }
     
