@@ -29,7 +29,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     }
     //遇到重复的分组，先不管，先保证算法的正确性，然后再做优化
     size_t pos=max(index,rcv_base);
-    size_t border=min(last-1,rcv_base+_capacity-1);
+    size_t border=min(data.size()+index-1,rcv_base+_capacity-1);
     //cout<<"border:"<<border<<'\n';
     while(pos<=border){//capacity and data
         int p=pos%_capacity;

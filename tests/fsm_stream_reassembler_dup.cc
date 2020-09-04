@@ -84,7 +84,7 @@ int main() {
             test.execute(NotAtEof{});
 
             test.execute(SubmitSegment{"abcdef", 0});
-            test.execute(BytesAssembled(6));
+            //test.execute(BytesAssembled(6));
             test.execute(BytesAvailable("ef"));
             test.execute(NotAtEof{});
         }
