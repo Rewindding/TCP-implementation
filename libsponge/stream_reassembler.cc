@@ -42,9 +42,9 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
         pos++;
     }
     size_t pos_d=rcv_base;
-    size_t border=rcv_base+_capacity-1;
+    size_t border_d=rcv_base+_capacity-1;
     string str="";
-    while(pos_d<=border){
+    while(pos_d<=border_d){
         //cout<<"here0\n";
         int p=pos_d%_capacity;
         if(received[p]){
