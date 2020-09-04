@@ -21,11 +21,8 @@ StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity),
 //! possibly out-of-order, from the logical stream, and assembles any newly
 //! contiguous substrings and writes them into the output stream in order.
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
-    if(data=="abcdef"&&index==0){
-        cout<<"rcv_base:"<<rcv_base<<" capacity:"<<_capacity<<'\n';
-    }
     if(_capacity==65123){
-        cout<<"call,data:"<<data<<" index:"<<index<<"\n";
+        cout<<"call,data:"<<data<<" index:"<<index<<" rcv_base:"<<rcv_base<<"\n";
     }
     size_t last=index+data.size();
     if(index-rcv_base>=_capacity) return;//overflow
@@ -67,9 +64,6 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     }
     unassembled_cnt-=writed;
     rcv_base+=writed;
-    if(data=="abcd"&&index==0){
-        cout<<"rcv_base:"<<rcv_base<<"\n";
-    }
     if(rcv_base==last_byte_num){
         _output.end_input();
     }
