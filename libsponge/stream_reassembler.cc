@@ -44,6 +44,9 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     if(rcv_base==last_byte_num+1){
         _output.end_input();
     }
+    if(data=="abcdef"){
+        cout<<"rcv_base:"<<rcv_base<<'\n';
+    }
 }
 void StreamReassembler::trans_data(){
     size_t pos=rcv_base;
@@ -54,7 +57,7 @@ void StreamReassembler::trans_data(){
         int p=pos%_capacity;
         if(received[p]){
             data+=window[p];
-            //received[p]=false;
+            received[p]=false;
         }
         else break;
         ++pos;
