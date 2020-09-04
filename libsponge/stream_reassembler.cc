@@ -23,12 +23,9 @@ StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity),
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
 
     size_t last=index+data.size();
-    if(last-1<rcv_base||index-rcv_base>=_capacity) {
-        if(_capacity==65123){
-            cout<<last-1<<"<"<<rcv_base<<"\n";
-            cout<<index-rcv_base<<">="<<_capacity<<'\n';
-        }
-        return;//duplicate
+    //size_t没有负数，减法运算的时候直接溢出！！！
+    if(last-1<rcv_base||index>=_capacity+rcv_base) {
+        return;
     }
     if(eof){
         last_byte_num=last;
@@ -37,19 +34,19 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     size_t pos=max(index,rcv_base);
     size_t border=min(data.size()+index-1,rcv_base+_capacity-1);
     //cout<<"border:"<<border<<'\n';
-    if(_capacity==65123){
-        cout<<"call,data:"<<data<<" index:"<<index<<" rcv_base:"<<rcv_base;
-        cout<<" border:"<<border<<'\n';
-    }
+    // if(_capacity==65123){
+    //     cout<<"call,data:"<<data<<" index:"<<index<<" rcv_base:"<<rcv_base;
+    //     cout<<" border:"<<border<<'\n';
+    // }
     while(pos<=border){//capacity and data
         int p=pos%_capacity;
         if(!received[p]){
             window[p]=data[pos-index];
             received[p]=true;
             ++unassembled_cnt;
-            if(_capacity==65123){
-                cout<<"write, p:"<<p<<" data:"<<data[pos-index]<<'\n';
-            }
+            // if(_capacity==65123){
+            //     cout<<"write, p:"<<p<<" data:"<<data[pos-index]<<'\n';
+            // }
         }
         pos++;
     }
