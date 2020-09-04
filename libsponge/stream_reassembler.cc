@@ -24,8 +24,10 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
 
     size_t last=index+data.size();
     if(last-1<rcv_base||index-rcv_base>=_capacity) {
-        cout<<last-1<<"<"<<rcv_base<<"\n";
-        cout<<index-rcv_base<<">="<<_capacity<<'\n';
+        if(_capacity==65123){
+            cout<<last-1<<"<"<<rcv_base<<"\n";
+            cout<<index-rcv_base<<">="<<_capacity<<'\n';
+        }
         return;//duplicate
     }
     if(eof){
