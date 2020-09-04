@@ -59,6 +59,9 @@ void StreamReassembler::trans_data(){
         else break;
         ++pos;
     }
+    if(data=="ef"){
+        cout<<"data==ef!!!!!\n";
+    }
     size_t writed=_output.write(data);
     for(size_t i=rcv_base+writed;i<rcv_base+data.size();++i){
         //cout<<"here1\n";
