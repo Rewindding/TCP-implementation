@@ -24,6 +24,9 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     if(data=="abcdef"&&index==0){
         cout<<"rcv_base:"<<rcv_base<<" capacity:"<<_capacity<<'\n';
     }
+    if(_capacity==65123){
+        cout<<"call,data:"<<data<<" index:"<<index<<"\n";
+    }
     size_t last=index+data.size();
     if(index-rcv_base>=_capacity) return;//overflow
     if(last-1<rcv_base) return;//duplicate
