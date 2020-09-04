@@ -23,8 +23,12 @@ StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity),
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
 
     size_t last=index+data.size();
-    if(index-rcv_base>=_capacity) return;//overflow
-    if(last-1<rcv_base) return;//duplicate
+    if(last-1<rcv_base||index-rcv_base>=_capacity) {
+        if(_capacity==65123){
+        cout<<"return, call,data:"<<data<<" index:"<<index<<" rcv_base:"<<rcv_base<<'\n';    
+        }    
+        return;//duplicate
+    }
     if(eof){
         last_byte_num=last;
     }
@@ -34,7 +38,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     //cout<<"border:"<<border<<'\n';
     if(_capacity==65123){
         cout<<"call,data:"<<data<<" index:"<<index<<" rcv_base:"<<rcv_base;
-        cout<<"border:"<<border<<'\n';
+        cout<<" border:"<<border<<'\n';
     }
     while(pos<=border){//capacity and data
         int p=pos%_capacity;
