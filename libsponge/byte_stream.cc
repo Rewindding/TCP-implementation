@@ -23,11 +23,12 @@ ByteStream::ByteStream(const size_t cap):capacity(cap),bytes_readed(0),bytes_wri
 size_t ByteStream::write(const string &data) {
     size_t size = que.size();
     int cnt=min(data.size(),capacity-size);
+    cnt=max(cnt,0);
     for(int i=0;i<cnt;++i){
         que.push_back(data[i]);
     }
-    bytes_writed+=max(cnt,0);
-    return cnt>=0?cnt:0;
+    bytes_writed+=cnt;
+    return cnt;
 }
 
 //! \param[in] len bytes will be copied from the output side of the buffer
