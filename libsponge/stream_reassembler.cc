@@ -13,57 +13,56 @@ void DUMMY_CODE(Targs &&... /* unused */) {}
 
 using namespace std;
 
-StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity), _capacity(capacity),rcv_base(0),next_seq(0),unassembled_cnt(0),last_byte_num(-16),window(_capacity,0),received(_capacity,false){}
+StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity), _capacity(capacity),rcv_base(0),unassembled_cnt(0),last_byte_num(-16),window(_capacity,' '),received(_capacity,false){}
 
 //! \details This function accepts a substring (aka a segment) of bytes,
 //! possibly out-of-order, from the logical stream, and assembles any newly
 //! contiguous substrings and writes them into the output stream in order.
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
-    /**
-     * 以为只有按序到达的时候才需要把数据交付上层，但是，上层阻塞时候，没有交付成功，下一次无论如何都要重试，所以每次都要尝试交付信息给上层
-    */
-    //trans_data();//先调用一次，可能出现窗口满了，但是out_put还能写
-    size_t data_end_index=index+data.size()-1;
-    if(eof) last_byte_num=data_end_index;
-    if(index-rcv_base>=_capacity) return;//out of window bound;
-    //else if(data_end_index<next_seq) return;//completely duplicate
-    size_t zero=0;
-    size_t start_index=index-rcv_base;//
-    size_t offset=max(zero,next_seq-index);//how many bytes that already writed
-    size_t len=min(data.size()-offset,_capacity-(next_seq-rcv_base));
-    for(size_t i=start_index+offset,k=offset,cnt=0;cnt<len;++i,++k,++cnt){
-        window[i]=data[k];
-        if(!received[i]){
-            //cout<<i<<'\n';
-            received[i]=true;
+    size_t last=index+data.size()-1;
+    if(index-rcv_base>=_capacity) return;//overflow
+    if(last<rcv_base) return;//duplicate
+    if(eof){
+        last_byte_num=last;
+    }
+    //遇到重复的分组，先不管，先保证算法的正确性，然后再做优化
+    size_t pos=max(index,rcv_base);
+    size_t border=min(last,rcv_base+_capacity-1);
+    while(pos<=border){//capacity and data
+        int p=pos%_capacity;
+        if(!received[p]){
+            window[p]=data[pos-index];
+            received[p]=true;
             ++unassembled_cnt;
         }
+        pos++;
     }
     trans_data();
     if(rcv_base==last_byte_num+1){
-       _output.end_input();
-   }
+        _output.end_input();
+    }
 }
 void StreamReassembler::trans_data(){
-    size_t len=0;
-    string data;
-    while(len<_capacity&&received[len]) {
-        data+=window[len];
-        ++len;
+    size_t pos=rcv_base;
+    size_t border=rcv_base+_capacity-1;
+    string data="";
+    while(pos<=border){
+        int p=pos%_capacity;
+        if(received[p]){
+            data+=window[p];
+            //received[p]=false;
+        }
+        else break;
     }
     size_t writed=_output.write(data);
-    cout<<"data:"<<data<<" "<<"writed:"<<writed<<"\n";
-    next_seq=rcv_base+len;
-    rcv_base+=writed;
-    unassembled_cnt-=writed;
-    for(size_t i=0;i<writed;++i){
-        window.pop_front();
-        window.push_back(' ');
-        received.pop_front();
-        received.push_back(false);
+    for(size_t i=rcv_base;i<rcv_base+writed;++i){
+        int p=i%_capacity;
+        received[p]=false;
     }
+    unassembled_cnt-=writed;
+    rcv_base+=writed;
 }
-//这个的意思到底要返回个啥？是当前窗口中byte的总数，还是有序byte的总数？ 还是无序byte的总数？
+//返回当前窗口中收到的字节总数
 size_t StreamReassembler::unassembled_bytes() const { return unassembled_cnt; }
 
 bool StreamReassembler::empty() const {return unassembled_cnt==0; }
