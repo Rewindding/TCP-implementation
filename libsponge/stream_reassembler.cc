@@ -66,7 +66,7 @@ void StreamReassembler::trans_data(){
     for(size_t i=rcv_base+writed;i<rcv_base+data.size();++i){
         //cout<<"here1\n";
         int p=i%_capacity;
-        received[p]=false;
+        received[p]=true;
     }
     unassembled_cnt-=writed;
     rcv_base+=writed;
