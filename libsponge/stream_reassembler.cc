@@ -41,7 +41,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
         pos++;
     }
     trans_data();
-    if(rcv_base==last_byte_num+1){
+    if(rcv_base>last_byte_num){
         _output.end_input();
     }
 }
