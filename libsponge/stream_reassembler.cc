@@ -27,12 +27,13 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     if(index-rcv_base>=_capacity) return;//out of window bound;
     //else if(data_end_index<next_seq) return;//completely duplicate
     size_t zero=0;
-    size_t start_index=index-rcv_base;
+    size_t start_index=index-rcv_base;//
     size_t offset=max(zero,next_seq-index);//how many bytes that already writed
     size_t len=min(data.size()-offset,_capacity-(next_seq-rcv_base));
     for(size_t i=start_index+offset,k=offset,cnt=0;cnt<len;++i,++k,++cnt){
+        window[i]=data[k];
         if(!received[i]){
-            window[i]=data[k];
+            printf("%d\n",i);
             received[i]=true;
             ++unassembled_cnt;
         }
