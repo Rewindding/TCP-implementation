@@ -16,7 +16,7 @@ class StreamReassembler {
     size_t rcv_base;    //the start num of current window
     size_t unassembled_cnt;
     size_t last_byte_num;//the number of last byte
-    std::string window;//how to represent that the byte is unreceived?
+    std::vector<char> window;//how to represent that the byte is unreceived?
     std::vector<bool> received;//indicate which num of byte has been received
     void trans_data();
   public:
