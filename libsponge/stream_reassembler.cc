@@ -22,9 +22,6 @@ StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity),
 //! contiguous substrings and writes them into the output stream in order.
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
     bool f = (data=="abcdef"&&index==0);
-    if(f){
-        cout<<"before: rcv_base="<<rcv_base<<"\n";
-    }
     size_t last=index+data.size();
     if(index-rcv_base>=_capacity) return;//overflow
     if(last-1<rcv_base) return;//duplicate
@@ -44,39 +41,37 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
         }
         pos++;
     }
-    trans_data();
-    if(rcv_base==last_byte_num){
-        _output.end_input();
-    }
-    if(f){
-        cout<<"after: rcv_base="<<rcv_base<<"\n";
-    }
-}
-void StreamReassembler::trans_data(){
     size_t pos=rcv_base;
     size_t border=rcv_base+_capacity-1;
-    string data="";
+    string str="";
     while(pos<=border){
         //cout<<"here0\n";
         int p=pos%_capacity;
         if(received[p]){
-            data+=window[p];
+            str+=window[p];
             received[p]=false;
         }
         else break;
         ++pos;
     }
-    if(data=="ef"){
-        cout<<"data==ef!!!!!\n";
-    }
-    size_t writed=_output.write(data);
-    for(size_t i=rcv_base+writed;i<rcv_base+data.size();++i){
+    size_t writed=_output.write(str);
+    for(size_t i=rcv_base+writed;i<rcv_base+str.size();++i){
         //cout<<"here1\n";
         int p=i%_capacity;
         received[p]=true;
     }
     unassembled_cnt-=writed;
     rcv_base+=writed;
+    if(data=="abcd"&&index==0){
+        cout<<"rcv_base:"<<rcv_base<<"\n";
+    }
+    if(rcv_base==last_byte_num){
+        _output.end_input();
+    }
+    
+}
+void StreamReassembler::trans_data(){
+
 }
 //返回当前窗口中收到的字节总数
 size_t StreamReassembler::unassembled_bytes() const { return unassembled_cnt; }
