@@ -76,7 +76,7 @@ int main() {
         }
 
         {
-            ReassemblerTestHarness test{65123};
+            ReassemblerTestHarness test{65000};
 
             test.execute(SubmitSegment{"abcd", 0});
             test.execute(BytesAssembled(4));

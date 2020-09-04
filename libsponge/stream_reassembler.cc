@@ -21,40 +21,39 @@ StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity),
 //! possibly out-of-order, from the logical stream, and assembles any newly
 //! contiguous substrings and writes them into the output stream in order.
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
-
     size_t last=index+data.size();
-    //size_t没有负数，减法运算的时候直接溢出！！！
+    //size_t没有负数，减法运算得到负数的时候直接溢出！！！
     if(last-1<rcv_base||index>=_capacity+rcv_base) {
         return;
     }
     if(eof){
         last_byte_num=last;
     }
-    //遇到重复的分组，先不管，先保证算法的正确性，然后再做优化
     size_t pos=max(index,rcv_base);
     size_t border=min(data.size()+index-1,rcv_base+_capacity-1);
-    //cout<<"border:"<<border<<'\n';
-    // if(_capacity==65123){
-    //     cout<<"call,data:"<<data<<" index:"<<index<<" rcv_base:"<<rcv_base;
-    //     cout<<" border:"<<border<<'\n';
-    // }
     while(pos<=border){//capacity and data
         int p=pos%_capacity;
         if(!received[p]){
             window[p]=data[pos-index];
             received[p]=true;
             ++unassembled_cnt;
-            // if(_capacity==65123){
-            //     cout<<"write, p:"<<p<<" data:"<<data[pos-index]<<'\n';
-            // }
         }
         pos++;
     }
+    trans_data();
+    if(data==""&&eof&&index==4){
+        cout<<"rcv_base:"<<rcv_base<<"\n";
+        cout<<"last_byte_num:"<<last_byte_num<<"\n";
+    }
+    if(rcv_base==last_byte_num){
+        _output.end_input();
+    }   
+}
+void StreamReassembler::trans_data(){
     size_t pos_d=rcv_base;
     size_t border_d=rcv_base+_capacity-1;
     string str="";
     while(pos_d<=border_d){
-        //cout<<"here0\n";
         int p=pos_d%_capacity;
         if(received[p]){
             str+=window[p];
@@ -71,13 +70,6 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     }
     unassembled_cnt-=writed;
     rcv_base+=writed;
-    if(rcv_base==last_byte_num){
-        _output.end_input();
-    }
-    
-}
-void StreamReassembler::trans_data(){
-
 }
 //返回当前窗口中收到的字节总数
 size_t StreamReassembler::unassembled_bytes() const { return unassembled_cnt; }
