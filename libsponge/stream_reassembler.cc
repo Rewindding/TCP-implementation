@@ -14,7 +14,7 @@ void DUMMY_CODE(Targs &&... /* unused */) {}
 using namespace std;
 
 StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity), _capacity(capacity),rcv_base(0),unassembled_cnt(0),last_byte_num(-16),window(_capacity,' '),received(_capacity,false){
-    cout<<"construct\n";
+    //cout<<"construct\n";
 }
 
 //! \details This function accepts a substring (aka a segment) of bytes,
@@ -44,7 +44,6 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     if(rcv_base==last_byte_num+1){
         _output.end_input();
     }
-    cout<<"rcv_base:"<<rcv_base<<'\n';
 }
 void StreamReassembler::trans_data(){
     size_t pos=rcv_base;
