@@ -50,17 +50,18 @@ void StreamReassembler::trans_data(){
     size_t border=rcv_base+_capacity-1;
     string data="";
     while(pos<=border){
-        cout<<"here0\n";
+        //cout<<"here0\n";
         int p=pos%_capacity;
         if(received[p]){
             data+=window[p];
             //received[p]=false;
         }
         else break;
+        ++pos;
     }
     size_t writed=_output.write(data);
     for(size_t i=rcv_base;i<rcv_base+writed;++i){
-        cout<<"here1\n";
+        //cout<<"here1\n";
         int p=i%_capacity;
         received[p]=false;
     }
