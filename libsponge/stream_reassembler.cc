@@ -22,13 +22,17 @@ StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity),
 //! contiguous substrings and writes them into the output stream in order.
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
     size_t last=index+data.size();
+    if(eof){
+        last_byte_num=last;
+        if(rcv_base==last_byte_num){
+            _output.end_input();
+        }//最后一个报文，可能是空的
+    }
     //size_t没有负数，减法运算得到负数的时候直接溢出！！！
     if(last-1<rcv_base||index>=_capacity+rcv_base) {
         return;
     }
-    if(eof){
-        last_byte_num=last;
-    }
+    
     size_t pos=max(index,rcv_base);
     size_t border=min(data.size()+index-1,rcv_base+_capacity-1);
     while(pos<=border){//capacity and data
@@ -41,10 +45,6 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
         pos++;
     }
     trans_data();
-    if(data==""&&eof&&index==4){
-        cout<<"rcv_base:"<<rcv_base<<"\n";
-        cout<<"last_byte_num:"<<last_byte_num<<"\n";
-    }
     if(rcv_base==last_byte_num){
         _output.end_input();
     }   
