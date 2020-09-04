@@ -41,18 +41,18 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
         }
         pos++;
     }
-    size_t pos=rcv_base;
+    size_t pos_d=rcv_base;
     size_t border=rcv_base+_capacity-1;
     string str="";
-    while(pos<=border){
+    while(pos_d<=border){
         //cout<<"here0\n";
-        int p=pos%_capacity;
+        int p=pos_d%_capacity;
         if(received[p]){
             str+=window[p];
             received[p]=false;
         }
         else break;
-        ++pos;
+        ++pos_d;
     }
     size_t writed=_output.write(str);
     for(size_t i=rcv_base+writed;i<rcv_base+str.size();++i){
