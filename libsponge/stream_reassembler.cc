@@ -13,7 +13,9 @@ void DUMMY_CODE(Targs &&... /* unused */) {}
 
 using namespace std;
 
-StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity), _capacity(capacity),rcv_base(0),unassembled_cnt(0),last_byte_num(-16),window(_capacity,' '),received(_capacity,false){}
+StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity), _capacity(capacity),rcv_base(0),unassembled_cnt(0),last_byte_num(-16),window(_capacity,' '),received(_capacity,false){
+    cout<<"construct\n";
+}
 
 //! \details This function accepts a substring (aka a segment) of bytes,
 //! possibly out-of-order, from the logical stream, and assembles any newly
@@ -48,6 +50,7 @@ void StreamReassembler::trans_data(){
     size_t border=rcv_base+_capacity-1;
     string data="";
     while(pos<=border){
+        cout<<"here0\n";
         int p=pos%_capacity;
         if(received[p]){
             data+=window[p];
@@ -57,6 +60,7 @@ void StreamReassembler::trans_data(){
     }
     size_t writed=_output.write(data);
     for(size_t i=rcv_base;i<rcv_base+writed;++i){
+        cout<<"here1\n";
         int p=i%_capacity;
         received[p]=false;
     }
