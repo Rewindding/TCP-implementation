@@ -33,7 +33,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     for(size_t i=start_index+offset,k=offset,cnt=0;cnt<len;++i,++k,++cnt){
         window[i]=data[k];
         if(!received[i]){
-            printf("%d\n",i);
+            cout<<i<<'\n';
             received[i]=true;
             ++unassembled_cnt;
         }
