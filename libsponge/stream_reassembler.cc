@@ -34,7 +34,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     for(size_t i=start_index+offset,k=offset,cnt=0;cnt<len;++i,++k,++cnt){
         window[i]=data[k];
         if(!received[i]){
-            cout<<i<<'\n';
+            //cout<<i<<'\n';
             received[i]=true;
             ++unassembled_cnt;
         }
@@ -52,6 +52,7 @@ void StreamReassembler::trans_data(){
         ++len;
     }
     size_t writed=_output.write(data);
+    cout<<"data:"<<data<<" "<<"writed:"<<writed<<"\n";
     next_seq=rcv_base+len;
     rcv_base+=writed;
     unassembled_cnt-=writed;
