@@ -31,10 +31,12 @@ WrappingInt32 wrap(uint64_t n, WrappingInt32 isn) {
 uint64_t unwrap(WrappingInt32 n, WrappingInt32 isn, uint64_t checkpoint) {
     //TO do understand the theory
     uint32_t diff = n - wrap(checkpoint, isn);
+    //how about diff<0?
     uint64_t res = static_cast<uint64_t>(diff) + checkpoint;
     // change res to be the closest number to checkpoint
     if (diff >= (1u << 31) && res >= (1ul << 32)) {
         res -= 1ul << 32;
     }
+    //checkpoint是一定比res小吗？不是
     return res;
 }
