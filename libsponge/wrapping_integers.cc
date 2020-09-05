@@ -31,7 +31,7 @@ WrappingInt32 wrap(uint64_t n, WrappingInt32 isn) {
 uint64_t unwrap(WrappingInt32 n, WrappingInt32 isn, uint64_t checkpoint) {
     cout<<"unwrap,called,n:"<<n<<" isn:"<<isn<<" checkpoint:"<<checkpoint<<"\n";
     WrappingInt32 wrap_checkpoint=wrap(checkpoint,isn);
-    long long difference=n-wrap_checkpoint;
+    long long difference=wrap_checkpoint-n;
     if(difference<=0){
         difference=(1ll<<32)+difference;
     }
