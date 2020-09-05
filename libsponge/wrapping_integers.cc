@@ -14,7 +14,7 @@ using namespace std;
 //! \param n The input absolute 64-bit sequence number
 //! \param isn The initial sequence number
 WrappingInt32 wrap(uint64_t n, WrappingInt32 isn) {
-    uint32_t res=(n+isn.raw_value())%UINT32_MAX;
+    uint32_t res=(n+isn.raw_value())%(1ll<<32);
     return WrappingInt32{res};
 }
 
@@ -32,7 +32,7 @@ uint64_t unwrap(WrappingInt32 n, WrappingInt32 isn, uint64_t checkpoint) {
     WrappingInt32 wrap_checkpoint=wrap(checkpoint,isn);
     long long difference=n-wrap_checkpoint;
     if(difference<0){
-        difference=INT32_MAX+(n-wrap_checkpoint);
+        difference=(1ll<<32)+(n-wrap_checkpoint);
     }
     return checkpoint+difference;
 }
