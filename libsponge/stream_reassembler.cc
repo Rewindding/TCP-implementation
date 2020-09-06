@@ -20,9 +20,6 @@ StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity),
 //! contiguous substrings and writes them into the output stream in order.
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
     size_t last=index+data.size();
-    // if(_capacity==65123){
-    //     cout<<"called,data: "<<data<<" index:"<<index<<" ,eof: "<<eof<<"\n";
-    // }
     if(eof){
         last_byte_num=last;
         if(rcv_base==last_byte_num){
@@ -65,7 +62,6 @@ void StreamReassembler::trans_data(){
     }
     size_t writed=_output.write(str);
     for(size_t i=rcv_base+writed;i<rcv_base+str.size();++i){
-        //cout<<"here1\n";
         int p=i%_capacity;
         received[p]=true;
     }
