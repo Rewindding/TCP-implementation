@@ -11,9 +11,9 @@ void DUMMY_CODE(Targs &&... /* unused */) {}
 using namespace std;
 
 bool TCPReceiver::segment_received(const TCPSegment &seg) {
-    WrappingInt32 seqno=seg.header().seqno();
-    bool eof=seg.header().fin();
-    if(seg.header().syn()){
+    WrappingInt32 seqno=seg.header().seqno;
+    bool eof=seg.header().fin;
+    if(seg.header().syn{
         if(_syn_received) return false;//duplicated
         _syn_received=true;
         _isn=seqno;
