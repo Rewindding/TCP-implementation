@@ -13,15 +13,19 @@ using namespace std;
 bool TCPReceiver::segment_received(const TCPSegment &seg) {
     WrappingInt32 seqno=seg.header().seqno;
     bool eof=seg.header().fin;
-    if(seg.header().syn){
-        if(_syn_received) return false;//duplicated
-        _syn_received=true;
-        _isn=seqno;
-        return true;
+    if(!_syn_received){
+        if(seg.header().syn){
+            _syn_received=true;
+            _isn=seqno;
+            return true;
+        }
+        else return false;
     }
+    else if(seg.header().syn) {return false;}//duplicate
     uint64_t absolute_seqno=unwrap(seqno,_isn,_checkpoint);
     size_t stream_index=absolute_seqno-1;
     size_t rcv_base=_reassembler.get_rcv_base();
+    
     if(rcv_base+_capacity<=stream_index){
         //overflow!
         return false;
@@ -36,6 +40,9 @@ bool TCPReceiver::segment_received(const TCPSegment &seg) {
     return true;
 }
 
-optional<WrappingInt32> TCPReceiver::ackno() const { return {}; }
+optional<WrappingInt32> TCPReceiver::ackno() const { 
+    if(!_syn_received) return {};
+    else return wrap(_next_seq,_isn); 
+}
 
 size_t TCPReceiver::window_size() const { return {}; }

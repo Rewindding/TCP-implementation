@@ -65,6 +65,7 @@ void StreamReassembler::trans_data(){
         int p=i%_capacity;
         received[p]=true;
     }
+    //ackno!=rcv_base!!!
     unassembled_cnt-=writed;
     rcv_base+=writed;
 }
