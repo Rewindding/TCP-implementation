@@ -37,6 +37,7 @@ bool TCPReceiver::segment_received(const TCPSegment &seg) {
     if(!fall_in_window) {
         cout<<"_ack:"<<_ack<<"\n";
         cout<<"_isn:"<<_isn<<"\n";
+        cout<<"_check_point"<<_checkpoint<<"\n";
         cout<<"window:"<<window_start<<","<<window_end<<'\n';
         cout<<"segment:"<<seqno_start<<","<<seqno_end<<"\n";
         return false;
