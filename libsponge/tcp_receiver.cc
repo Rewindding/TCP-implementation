@@ -35,6 +35,8 @@ bool TCPReceiver::segment_received(const TCPSegment &seg) {
     //determine if it's out of range
     bool fall_in_window=(seqno_start<=window_end&&seqno_start>=window_start)||(seqno_end<=window_end&&seqno_end>=window_start);
     if(!fall_in_window) {
+        cout<<"_ack:"<<_ack<<"\n";
+        cout<<"_isn:"<<_isn<<"\n";
         cout<<"window:"<<window_start<<","<<window_end<<'\n';
         cout<<"segment:"<<seqno_start<<","<<seqno_end<<"\n";
         return false;
