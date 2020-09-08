@@ -25,7 +25,7 @@ bool TCPReceiver::segment_received(const TCPSegment &seg) {
         }
         //else return false;
     }
-    else if(seg.header().syn) {return false;}//duplicate
+    //else if(seg.header().syn) {return false;}//duplicate
     //absolute index 数据报文的起始字节编号和终止字节编号，包含fin和syn
     auto seqno_start=unwrap(seg.header().seqno,_isn,_checkpoint);
     auto seqno_end=seqno_start+max(seg.length_in_sequence_space()-1,static_cast<size_t>(0));
