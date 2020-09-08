@@ -1,5 +1,5 @@
 #include "tcp_receiver.hh"
-
+#include <iostream>
 // Dummy implementation of a TCP receiver
 
 // For Lab 2, please replace with a real implementation that passes the
@@ -34,7 +34,11 @@ bool TCPReceiver::segment_received(const TCPSegment &seg) {
     auto window_end=window_start+max(window_size()-1,static_cast<size_t>(0));//if window size==0?
     //determine if it's out of range
     bool fall_in_window=(seqno_start<=window_end&&seqno_start>=window_start)||(seqno_end<=window_end&&seqno_end>=window_start);
-    if(!fall_in_window) return false;
+    if(!fall_in_window) {
+        cout<<"window:"<<window_start<<","<<window_end<<'\n';
+        cout<<"segment:"<<seqno_start<<","<<seqno_end<<"\n";
+        return false;
+    }
     //write data
     _reassembler.push_substring(seg.payload().copy(),seqno_start-1+(seg.header().syn),eof);//if seq_start==0?
     //update _checkpoint and ack
