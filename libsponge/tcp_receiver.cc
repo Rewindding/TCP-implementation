@@ -19,10 +19,6 @@ bool TCPReceiver::segment_received(const TCPSegment &seg) {
             _syn_received=true;
             _isn=seqno;
             _ack=seqno;//为什么不是seqno+1? 后面处理了？
-            if(seg.header().fin&&seg.length_in_sequence_space()==2){//一个只有fin和syn的空报文
-                _reassembler.stream_out().end_input();
-                return true;
-            }
         }
         else return false;
     }
@@ -36,17 +32,16 @@ bool TCPReceiver::segment_received(const TCPSegment &seg) {
     //determine if it's out of range
     bool fall_in_window=(seqno_start<=window_end&&seqno_start>=window_start)||(seqno_end<=window_end&&seqno_end>=window_start);
     if(!fall_in_window) {
-        cout<<"_ack:"<<_ack<<"\n";
-        cout<<"_isn:"<<_isn<<"\n";
-        cout<<"_check_point"<<_checkpoint<<"\n";
-        cout<<"window:"<<window_start<<","<<window_end<<'\n';
-        cout<<"segment:"<<seqno_start<<","<<seqno_end<<"\n";
         return false;
+    }
+    if(seg.header().syn&&seg.header().fin&&seg.length_in_sequence_space()==2){//一个只有fin和syn的空报文
+        _reassembler.stream_out().end_input();
     }
     //write data
     _reassembler.push_substring(seg.payload().copy(),seqno_start-1+(seg.header().syn),eof);//if seq_start==0?
     //update _checkpoint and ack
     _checkpoint=_reassembler.stream_out().bytes_written();
+    //update ack, consider the syn and fin as one byte
     bool end_input=_reassembler.stream_out().input_ended();
     int offset=(end_input?1:0)+(_syn_received?1:0);
     _ack=wrap(_reassembler.stream_out().bytes_written()+offset,_isn);
