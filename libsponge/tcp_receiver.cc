@@ -18,6 +18,7 @@ bool TCPReceiver::segment_received(const TCPSegment &seg) {
         if(seg.header().syn){
             _syn_received=true;
             _isn=seqno;
+            _ack=seqno;//为什么不是seqno+1? 后面处理了？
             if(seg.header().fin&&seg.length_in_sequence_space()==2){//一个只有fin和syn的空报文
                 _reassembler.stream_out().end_input();
                 return true;
