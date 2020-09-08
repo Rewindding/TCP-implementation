@@ -14,6 +14,7 @@ class StreamReassembler {
     ByteStream _output;  //!< The reassembled in-order byte stream
     size_t _capacity;    //!< The maximum number of bytes
     size_t rcv_base;    //the start num of current window
+    size_t next_seq;    //the next expected seqno
     size_t unassembled_cnt;
     size_t last_byte_num;//the number of last byte
     std::vector<char> window;//how to represent that the byte is unreceived?
@@ -55,6 +56,10 @@ class StreamReassembler {
 
     size_t get_rcv_base() const{
       return rcv_base;
+    }
+
+    size_t get_next_seq(){//get the next expected seq_no
+      return next_seq;
     }
 };
 

@@ -13,7 +13,7 @@ void DUMMY_CODE(Targs &&... /* unused */) {}
 
 using namespace std;
 
-StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity), _capacity(capacity),rcv_base(0),unassembled_cnt(0),last_byte_num(-16),window(_capacity,' '),received(_capacity,false){}
+StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity), _capacity(capacity),rcv_base(0),next_seq(0),unassembled_cnt(0),last_byte_num(-16),window(_capacity,' '),received(_capacity,false){}
 
 //! \details This function accepts a substring (aka a segment) of bytes,
 //! possibly out-of-order, from the logical stream, and assembles any newly
@@ -68,6 +68,7 @@ void StreamReassembler::trans_data(){
     //ackno!=rcv_base!!!
     unassembled_cnt-=writed;
     rcv_base+=writed;
+    next_seq=max(next_seq,rcv_base+str.size());
 }
 //返回当前窗口中收到的字节总数
 size_t StreamReassembler::unassembled_bytes() const { return unassembled_cnt; }
