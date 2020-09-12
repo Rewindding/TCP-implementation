@@ -53,7 +53,7 @@ bool TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
     auto ab_ack=unwrap(ackno,_isn,_next_seqno);
     printf("ack received: ");
     std::cout<<ab_ack<<"\n";
-    if(ab_ack>=_next_seqno) return false;
+    if(ab_ack>_next_seqno) return false;
     else if(ab_ack>_send_base){
         //update send base and window size
         _send_base=ab_ack;
