@@ -27,7 +27,7 @@ uint64_t TCPSender::bytes_in_flight() const { return {}; }
 void TCPSender::fill_window() {
     _rcv_window_size=max(_rcv_window_size,static_cast<size_t>(1));
     printf("send,_rcv_window_size:");
-    std::cout<<_rcv_window_size<<"\n";
+    std::cout<<_rcv_window_size<<", _next_seq_no: "<<_next_seqno<<"\n";
     while(!_stream.input_ended()&&_rcv_window_size>0){
         size_t seg_payload_len=min(TCPConfig::MAX_PAYLOAD_SIZE,_rcv_window_size);
         string payload=_stream.read(seg_payload_len);
@@ -52,6 +52,8 @@ void TCPSender::fill_window() {
 //! \returns `false` if the ackno appears invalid (acknowledges something the TCPSender hasn't sent yet)
 bool TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_size) {
     auto ab_ack=unwrap(ackno,_isn,_next_seqno);
+    printf("ack received: ");
+    std::cout<<ab_ack<<"\n";
     if(ab_ack>=_next_seqno) return false;
     else if(ab_ack>_send_base){
         //update send base and window size
@@ -95,6 +97,6 @@ unsigned int TCPSender::consecutive_retransmissions() const { return _consecutiv
 
 void TCPSender::send_empty_segment() {
     TCPSegment seg{};
-    
-
+    seg.header().seqno=wrap(_next_seqno,_isn);
+    _segments_out.push(seg);
 }
