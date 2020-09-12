@@ -22,7 +22,7 @@ TCPSender::TCPSender(const size_t capacity, const uint16_t retx_timeout, const s
     , _initial_retransmission_timeout{retx_timeout}
     , _stream(capacity) {}
 
-uint64_t TCPSender::bytes_in_flight() const { return {}; }
+uint64_t TCPSender::bytes_in_flight() const { return _bytes_in_flight; }
 
 void TCPSender::fill_window() {
     _rcv_window_size=max(_rcv_window_size,static_cast<size_t>(1));
@@ -40,6 +40,7 @@ void TCPSender::fill_window() {
         _outstanding_segs.push(seg);
         _rcv_window_size-=payload.size();
         _next_seqno+=seg.length_in_sequence_space();
+        _bytes_in_flight+=seg.length_in_sequence_space();
         if(!_timer_start){
             _timer_start=true;
             _timer=_time_passed;
@@ -68,6 +69,7 @@ bool TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
             auto last_index=unwrap(last_send_seg.header().seqno,_isn,_next_seqno)+last_send_seg.length_in_sequence_space()-1;
             if(last_index<ab_ack){
                 _outstanding_segs.pop();
+                _bytes_in_flight-=last_send_seg.length_in_sequence_space();
             }
             else break;
         }
