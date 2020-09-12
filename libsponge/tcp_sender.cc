@@ -4,6 +4,7 @@
 
 #include <random>
 #include <iostream>
+#include <cassert>
 // Dummy implementation of a TCP sender
 
 // For Lab 3, please replace with a real implementation that passes the
