@@ -56,7 +56,7 @@ bool TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
         _send_base=ab_ack;
         _rcv_window_size=window_size;
         //reset rto and consecutive times
-        _initial_retransmission_timeout=TCPConfig::rt_timeout;
+        _initial_retransmission_timeout=TCPConfig::TIMEOUT_DFLT;
         _consecutive_retransmission_time=0;
         while(!_outstanding_segs.empty()){
             auto& last_send_seg=_outstanding_segs.front();
@@ -83,7 +83,7 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
         _segments_out.push(retran_seg);
         _timer=_time_passed;//restart_timer
         if(_rcv_window_size>0){
-            consecutive_retransmissions+=1;
+            _consecutive_retransmission_time+=1;
             _initial_retransmission_timeout*=2;
         }
     }
