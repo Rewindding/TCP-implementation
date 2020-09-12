@@ -24,19 +24,76 @@ TCPSender::TCPSender(const size_t capacity, const uint16_t retx_timeout, const s
 
 uint64_t TCPSender::bytes_in_flight() const { return {}; }
 
-void TCPSender::fill_window() {}
+void TCPSender::fill_window() {
+    _rcv_window_size=max(_rcv_window_size,static_cast<size_t>(1));
+    while(!_stream.input_ended()&&_rcv_window_size>0){
+        size_t seg_payload_len=min(TCPConfig::MAX_PAYLOAD_SIZE,remain_window_size);
+        string payload=_stream.read(seg_payload_len);
+        TCPSegment seg{};
+        seg.header().seqno=wrap(_next_seqno,_isn);
+        seg.header().syn=(_next_seqno==0);
+        seg.header().fin=_stream.input_ended();
+        seg.payload=Buffer(move(payload));
+        _segments_out.push(seg);
+        _outstanding_segs.push(seg);
+        _rcv_window_size-=payload.size();
+        _next_seqno+=seg.length_in_sequence_space();
+        if(!_timer_start){
+            _timer_start=true;
+            _timer=_time_passed;
+        }
+    }
+}
 
 //! \param ackno The remote receiver's ackno (acknowledgment number)
 //! \param window_size The remote receiver's advertised window size
 //! \returns `false` if the ackno appears invalid (acknowledges something the TCPSender hasn't sent yet)
 bool TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_size) {
-    DUMMY_CODE(ackno, window_size);
-    return {};
+    auto ab_ack=unwrap(ackno,_isn,_next_seqno);
+    if(ab_ack>=_next_seqno) return false;
+    else if(ab_ack>_send_base){
+        //update send base and window size
+        _send_base=ab_ack;
+        _rcv_window_size=window_size;
+        //reset rto and consecutive times
+        _initial_retransmission_timeout=TCPConfig::rt_timeout;
+        _consecutive_retransmission_time=0;
+        while(!_outstanding_segs.empty()){
+            auto& last_send_seg=_outstanding_segs.front();
+            //last index of the segment
+            auto last_index=unwrap(last_send_seg.header().seqno,_isn,_next_seqno)+last_send_seg.length_in_sequence_space()-1;
+            if(last_index<ab_ack){
+                _outstanding_segs.pop();
+            }
+            else break;
+        }
+        if(!segments_out.empty()) _timer=_time_passed;//restart timer;
+    }
+    return true;
 }
 
 //! \param[in] ms_since_last_tick the number of milliseconds since the last call to this method
-void TCPSender::tick(const size_t ms_since_last_tick) { DUMMY_CODE(ms_since_last_tick); }
+void TCPSender::tick(const size_t ms_since_last_tick) { 
+    _time_passed+=ms_since_last_tick;
+    // here judge timeout
+    if(!_timer_start) return;
+    size_t duration=_time_passed-_timer;
+    if(duration>=_initial_retransmission_timeout){//time out
+        TCPSegment& retran_seg=_outstanding_segs.front();
+        _segments_out.push(seg);
+        _timer=_time_passed;//restart_timer
+        size_t remain_size=_rcv_window_size-()
+        if(_rcv_window_size>0){
+            ++consecutive_retransmissions;
+            _initial_retransmission_timeout*=2;
+        }
+    }
+}
 
-unsigned int TCPSender::consecutive_retransmissions() const { return {}; }
+unsigned int TCPSender::consecutive_retransmissions() const { return _consecutive_retransmission_time; }
 
-void TCPSender::send_empty_segment() {}
+void TCPSender::send_empty_segment() {
+    TCPSegment seg{};
+    
+
+}
