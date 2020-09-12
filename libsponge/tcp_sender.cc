@@ -83,6 +83,7 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
     if(!_timer_start) return;
     size_t duration=_time_passed-_timer;
     if(duration>=_initial_retransmission_timeout){//time out
+        assert(!_outstanding_segs.empty());
         TCPSegment& retran_seg=_outstanding_segs.front();
         _segments_out.push(retran_seg);
         _timer=_time_passed;//restart_timer
