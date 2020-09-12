@@ -83,7 +83,7 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
         _segments_out.push(retran_seg);
         _timer=_time_passed;//restart_timer
         if(_rcv_window_size>0){
-            ++consecutive_retransmissions;
+            consecutive_retransmissions+=1;
             _initial_retransmission_timeout*=2;
         }
     }
