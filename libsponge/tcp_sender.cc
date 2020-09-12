@@ -29,6 +29,7 @@ void TCPSender::fill_window() {
     printf("send,_rcv_window_size:");
     std::cout<<_rcv_window_size<<", _next_seq_no: "<<_next_seqno<<"\n";
     while(!_stream.input_ended()&&_rcv_window_size>0){
+        std::cout<<"here1\n";
         size_t seg_payload_len=min(TCPConfig::MAX_PAYLOAD_SIZE,_rcv_window_size);
         string payload=_stream.read(seg_payload_len);
         TCPSegment seg{};
