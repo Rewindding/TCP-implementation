@@ -34,12 +34,9 @@ void TCPSender::fill_window() {
         seg.header().syn=(_next_seqno==0);
         seg.header().fin=_stream.input_ended();
         seg.payload()=Buffer(move(payload));
-        std::cout<<"rcv_window_size: "<<_rcv_window_size<<"\n";
-        std::cout<<"payload_size: "<<payload.size()<<"\n";
-        std::cout<<"seq_no: "<<_next_seqno<<"\n";
         _segments_out.push(seg);
         _outstanding_segs.push(seg);
-        _rcv_window_size-=seg.length_in_sequence_space();
+        _rcv_window_size-=payload.size();
         _next_seqno+=seg.length_in_sequence_space();
         _bytes_in_flight+=seg.length_in_sequence_space();
         if(!_timer_start){
