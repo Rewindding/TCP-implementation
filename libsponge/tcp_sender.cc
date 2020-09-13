@@ -27,13 +27,13 @@ uint64_t TCPSender::bytes_in_flight() const { return _bytes_in_flight; }
 
 void TCPSender::fill_window() {
     _rcv_window_size=max(_rcv_window_size,static_cast<size_t>(1));
-    while(_next_seqno==0||(!_stream.buffer_empty()&&_rcv_window_size>0)){
+    while(_next_seqno==0||(!_stream.buffer_empty()&&_rcv_window_size>0)||!_FIN_SET){
         size_t seg_payload_len=min(TCPConfig::MAX_PAYLOAD_SIZE,_rcv_window_size);
         string payload=_stream.read(seg_payload_len);
         TCPSegment seg{};
         seg.header().seqno=wrap(_next_seqno,_isn);
         seg.header().syn=(_next_seqno==0);
-        seg.header().fin=_stream.input_ended();
+        seg.header().fin=_FIN_SET=_stream.input_ended();
         seg.payload()=Buffer(move(payload));
         _segments_out.push(seg);
         _outstanding_segs.push(seg);
@@ -86,16 +86,6 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
     if(duration>=_RTO){//time out
         assert(!_outstanding_segs.empty());
         TCPSegment& retran_seg=_outstanding_segs.front();
-        if(retran_seg.payload().copy()=="ijkl"){
-            printf("_time_passed: ");
-            std::cout<<_time_passed<<"\n";
-            printf("_timer_start: ");
-            std::cout<<_timer<<"\n";
-            printf("duration: ");
-            std::cout<<duration<<"\n";
-            printf("rto: ");
-            std::cout<<_RTO<<"\n";
-        }
         _segments_out.push(retran_seg);
         _timer=_time_passed;//restart_timer
         _RTO*=2;//报告里面说窗口size>0 才double???
