@@ -89,9 +89,7 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
         _segments_out.push(retran_seg);
         _timer=_time_passed;//restart_timer
         _initial_retransmission_timeout*=2;//报告里面说窗口size>0 才double???
-        if(_rcv_window_size>0){
-            _consecutive_retransmission_time+=1;
-        }
+        _consecutive_retransmission_time+=1;
     }
 }
 
