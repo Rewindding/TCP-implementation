@@ -37,7 +37,7 @@ void TCPSender::fill_window() {
         seg.payload()=Buffer(move(payload));
         _segments_out.push(seg);
         _outstanding_segs.push(seg);
-        _rcv_window_size-=payload.size();
+        _rcv_window_size-=seg.length_in_sequence_space();
         _next_seqno+=seg.length_in_sequence_space();
         _bytes_in_flight+=seg.length_in_sequence_space();
         if(!_timer_start){
