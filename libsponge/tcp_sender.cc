@@ -92,9 +92,11 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
             printf("_time_passed: ");
             std::cout<<_time_passed<<"\n";
             printf("_timer_start: ");
-            std::cout<<_timer_start<<"\n";
+            std::cout<<_timer<<"\n";
             printf("duration: ");
             std::cout<<duration<<"\n";
+            printf("rto: ");
+            std::cout<<_initial_retransmission_timeout<<"\n";
         }
         _segments_out.push(retran_seg);
         _timer=_time_passed;//restart_timer
