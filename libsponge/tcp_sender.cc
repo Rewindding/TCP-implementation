@@ -33,7 +33,7 @@ void TCPSender::fill_window() {
         TCPSegment seg{};
         seg.header().seqno=wrap(_next_seqno,_isn);
         seg.header().syn=(_next_seqno==0);
-        seg.header().fin=_stream.input_ended();
+        if(_rcv_window_size>0) seg.header().fin=_stream.input_ended();
         seg.payload()=Buffer(move(payload));
         _FIN_SET=seg.header().fin;
         _segments_out.push(seg);
