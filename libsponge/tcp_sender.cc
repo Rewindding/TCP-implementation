@@ -41,6 +41,8 @@ void TCPSender::fill_window() {
         _next_seqno+=seg.length_in_sequence_space();
         _bytes_in_flight+=seg.length_in_sequence_space();
         if(!_timer_start){
+            printf("set timer:");
+            std::cout<<_timer<<"\n";
             _timer_start=true;
             _timer=_time_passed;
         }
