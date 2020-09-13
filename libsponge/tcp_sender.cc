@@ -72,7 +72,9 @@ bool TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
             }
             else break;
         }
-        if(!_segments_out.empty()) {_timer_start=false//restart timer;}
+        if(!_segments_out.empty()) {
+            _timer_start=false//restart timer;
+        }
     }
     return true;
 }
