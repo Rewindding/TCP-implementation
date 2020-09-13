@@ -53,6 +53,8 @@ class TCPSender {
     size_t _timer{0};
     
     size_t _bytes_in_flight{0};
+
+    size_t _RTO{0};
   public:
     //! Initialize a TCPSender
     TCPSender(const size_t capacity = TCPConfig::DEFAULT_CAPACITY,

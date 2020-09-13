@@ -21,7 +21,7 @@ using namespace std;
 TCPSender::TCPSender(const size_t capacity, const uint16_t retx_timeout, const std::optional<WrappingInt32> fixed_isn)
     : _isn(fixed_isn.value_or(WrappingInt32{random_device()()}))
     , _initial_retransmission_timeout{retx_timeout}
-    , _stream(capacity) {}
+    , _stream(capacity),_RTO(_initial_retransmission_timeout) {}
 
 uint64_t TCPSender::bytes_in_flight() const { return _bytes_in_flight; }
 
@@ -41,8 +41,6 @@ void TCPSender::fill_window() {
         _next_seqno+=seg.length_in_sequence_space();
         _bytes_in_flight+=seg.length_in_sequence_space();
         if(!_timer_start){
-            // printf("set timer:");
-            // std::cout<<_timer<<"\n";
             _timer_start=true;
             _timer=_time_passed;
         }
@@ -60,7 +58,7 @@ bool TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
         _send_base=ab_ack;
         _rcv_window_size=window_size;
         //reset rto and consecutive times
-        _initial_retransmission_timeout=TCPConfig::TIMEOUT_DFLT;
+        _RTO = _initial_retransmission_timeout;
         _consecutive_retransmission_time=0;
         while(!_outstanding_segs.empty()){
             auto& last_send_seg=_outstanding_segs.front();
@@ -85,7 +83,7 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
     // here judge timeout
     if(!_timer_start) return;
     size_t duration=_time_passed-_timer;
-    if(duration>=_initial_retransmission_timeout){//time out
+    if(duration>=_RTO){//time out
         assert(!_outstanding_segs.empty());
         TCPSegment& retran_seg=_outstanding_segs.front();
         if(retran_seg.payload().copy()=="ijkl"){
@@ -96,11 +94,11 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
             printf("duration: ");
             std::cout<<duration<<"\n";
             printf("rto: ");
-            std::cout<<_initial_retransmission_timeout<<"\n";
+            std::cout<<_RTO<<"\n";
         }
         _segments_out.push(retran_seg);
         _timer=_time_passed;//restart_timer
-        _initial_retransmission_timeout*=2;//报告里面说窗口size>0 才double???
+        _RTO*=2;//报告里面说窗口size>0 才double???
         _consecutive_retransmission_time+=1;
     }
 }
