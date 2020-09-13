@@ -67,8 +67,8 @@ bool TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
             //last index of the segment
             auto last_index=unwrap(last_send_seg.header().seqno,_isn,_next_seqno)+last_send_seg.length_in_sequence_space()-1;
             if(last_index<ab_ack){
-                _outstanding_segs.pop();
                 _bytes_in_flight-=last_send_seg.length_in_sequence_space();
+                _outstanding_segs.pop();
             }
             else break;
         }
