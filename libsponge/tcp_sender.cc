@@ -52,8 +52,6 @@ void TCPSender::fill_window() {
 //! \returns `false` if the ackno appears invalid (acknowledges something the TCPSender hasn't sent yet)
 bool TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_size) {
     auto ab_ack=unwrap(ackno,_isn,_next_seqno);
-    printf("ack received: ");
-    std::cout<<ab_ack<<"\n";
     if(ab_ack>_next_seqno) return false;
     else if(ab_ack>_send_base){
         //update send base and window size
