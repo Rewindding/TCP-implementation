@@ -88,6 +88,14 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
     if(duration>=_initial_retransmission_timeout){//time out
         assert(!_outstanding_segs.empty());
         TCPSegment& retran_seg=_outstanding_segs.front();
+        if(retran_seg.payload().copy()=="ijkl"){
+            printf("_time_passed: ");
+            std::cout<<_time_passed<<"\n";
+            printf("_timer_start: ");
+            std::cout<<_timer_start<<"\n";
+            printf("duration: ");
+            std::cout<<duration<<"\n";
+        }
         _segments_out.push(retran_seg);
         _timer=_time_passed;//restart_timer
         _initial_retransmission_timeout*=2;//报告里面说窗口size>0 才double???
