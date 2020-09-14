@@ -25,7 +25,7 @@ uint64_t TCPSender::bytes_in_flight() const { return _bytes_in_flight; }
 
 void TCPSender::fill_window() {
     _rcv_window_size=max(_rcv_window_size,static_cast<size_t>(1));
-    while(_rcv_window_size>0&&(!_stream.buffer_empty()||_next_seqno==0||(!_FIN_SET&&_stream.input_ended()))){
+    while(_rcv_window_size>0&&(!_stream.buffer_empty()||_next_seqno==0||(!_FIN_SET&&_stream.input_ended()&&_stream.buffer_empty()))){
         size_t seg_len=min(TCPConfig::MAX_PAYLOAD_SIZE,_rcv_window_size);
         TCPSegment seg{};
         seg.header().seqno=wrap(_next_seqno,_isn);
@@ -34,7 +34,7 @@ void TCPSender::fill_window() {
         string payload=_stream.read(seg_len);
         seg.payload()=Buffer(move(payload));
         seg_len-=payload.size();
-        if(seg_len>0) seg.header().fin=_stream.input_ended();
+        if(seg_len>0) seg.header().fin=_stream.input_ended()&&_stream.buffer_empty();
         _FIN_SET=seg.header().fin;
         if(seg.header().fin){
             std::cout<<"payload:"<<payload<<"\n";
