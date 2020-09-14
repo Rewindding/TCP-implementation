@@ -24,8 +24,8 @@ TCPSender::TCPSender(const size_t capacity, const uint16_t retx_timeout, const s
 uint64_t TCPSender::bytes_in_flight() const { return _bytes_in_flight; }
 
 void TCPSender::fill_window() {
-    assert(_rcv_window_size>=_bytes_in_flight);
-    _rcv_window_size=max(_rcv_window_size-_bytes_in_flight,static_cast<size_t>(1));
+    if(_rcv_window_size<_bytes_in_flight) _rcv_window_size=1;
+    else _rcv_window_size=max(_rcv_window_size-_bytes_in_flight,static_cast<size_t>(1));
     while(_rcv_window_size>0&&(!_stream.buffer_empty()||_next_seqno==0||(!_FIN_SET&&_stream.eof()))){
         size_t seg_len=min(TCPConfig::MAX_PAYLOAD_SIZE,_rcv_window_size);
         TCPSegment seg{};
