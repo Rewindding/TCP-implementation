@@ -31,7 +31,7 @@ void TCPSender::fill_window() {
         //cout<<"remain_size: "<<remain_size<<"\n";
         if(remain_size==5){
             cout<<"_next_seqno:"<<_next_seqno<<" send_base: "<<_send_base<<"\n";
-            cout<<"_rcv_window_size: "<<_rcv_window_size<<:"\n";
+            cout<<"_rcv_window_size: "<<_rcv_window_size<<"\n";
         }
         size_t seg_len=min(TCPConfig::MAX_PAYLOAD_SIZE,remain_size);
         TCPSegment seg{};
