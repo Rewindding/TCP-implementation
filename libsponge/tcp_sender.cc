@@ -24,15 +24,15 @@ TCPSender::TCPSender(const size_t capacity, const uint16_t retx_timeout, const s
 uint64_t TCPSender::bytes_in_flight() const { return _next_seqno-_send_base; }
 
 void TCPSender::fill_window() {
-    _rcv_window_size=max(_rcv_window_size-_bytes_in_flight,static_cast<size_t>(1));
+    _rcv_window_size=max(_rcv_window_size,static_cast<size_t>(1));
     //window size occupied=next_seq-send_base
     while(_next_seqno-_send_base<_rcv_window_size&&(!_stream.buffer_empty()||_next_seqno==0||(!_FIN_SET&&_stream.eof()))){
         size_t remain_size=_rcv_window_size-(_next_seqno-_send_base);
         //cout<<"remain_size: "<<remain_size<<"\n";
-        if(remain_size==5){
-            cout<<"_next_seqno:"<<_next_seqno<<" send_base: "<<_send_base<<"\n";
-            cout<<"_rcv_window_size: "<<_rcv_window_size<<"\n";
-        }
+        // if(remain_size==5){
+        //     cout<<"_next_seqno:"<<_next_seqno<<" send_base: "<<_send_base<<"\n";
+        //     cout<<"_rcv_window_size: "<<_rcv_window_size<<"\n";
+        // }
         size_t seg_len=min(TCPConfig::MAX_PAYLOAD_SIZE,remain_size);
         TCPSegment seg{};
         seg.header().seqno=wrap(_next_seqno,_isn);
@@ -71,7 +71,7 @@ bool TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
             //last index of the segment
             auto last_index=unwrap(last_send_seg.header().seqno,_isn,_next_seqno)+last_send_seg.length_in_sequence_space()-1;
             if(last_index<ab_ack){
-                _bytes_in_flight-=last_send_seg.length_in_sequence_space();
+                //_bytes_in_flight-=last_send_seg.length_in_sequence_space();
                 _outstanding_segs.pop();
             }
             else break;
