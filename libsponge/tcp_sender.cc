@@ -21,12 +21,12 @@ TCPSender::TCPSender(const size_t capacity, const uint16_t retx_timeout, const s
     , _initial_retransmission_timeout{retx_timeout}
     , _stream(capacity),_RTO(_initial_retransmission_timeout) {}
 
-uint64_t TCPSender::bytes_in_flight() const { return _bytes_in_flight; }
+uint64_t TCPSender::bytes_in_flight() const { return _next_seqno-_send_base; }
 
 void TCPSender::fill_window() {
-    if(_rcv_window_size<_bytes_in_flight) _rcv_window_size=1;
-    else _rcv_window_size=max(_rcv_window_size-_bytes_in_flight,static_cast<size_t>(1));
-    while(_rcv_window_size>0&&(!_stream.buffer_empty()||_next_seqno==0||(!_FIN_SET&&_stream.eof()))){
+    _rcv_window_size=max(_rcv_window_size-_bytes_in_flight,static_cast<size_t>(1));
+    //window size occupied=next_seq-send_base
+    while(_next_seqno-_send_base<_rcv_window_size&&(!_stream.buffer_empty()||_next_seqno==0||(!_FIN_SET&&_stream.eof()))){
         size_t seg_len=min(TCPConfig::MAX_PAYLOAD_SIZE,_rcv_window_size);
         TCPSegment seg{};
         seg.header().seqno=wrap(_next_seqno,_isn);
@@ -39,9 +39,7 @@ void TCPSender::fill_window() {
         _FIN_SET=seg.header().fin;
         _segments_out.push(seg);
         _outstanding_segs.push(seg);
-        _rcv_window_size-=seg.length_in_sequence_space();
         _next_seqno+=seg.length_in_sequence_space();
-        _bytes_in_flight+=seg.length_in_sequence_space();
         if(!_timer_start){
             _timer_start=true;
             _timer=_time_passed;
