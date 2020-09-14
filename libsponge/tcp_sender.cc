@@ -27,7 +27,8 @@ void TCPSender::fill_window() {
     _rcv_window_size=max(_rcv_window_size-_bytes_in_flight,static_cast<size_t>(1));
     //window size occupied=next_seq-send_base
     while(_next_seqno-_send_base<_rcv_window_size&&(!_stream.buffer_empty()||_next_seqno==0||(!_FIN_SET&&_stream.eof()))){
-        size_t seg_len=min(TCPConfig::MAX_PAYLOAD_SIZE,_rcv_window_size);
+        size_t remain_size=_rcv_window_size-(_next_seqno-_send_base);
+        size_t seg_len=min(TCPConfig::MAX_PAYLOAD_SIZE,remain_size);
         TCPSegment seg{};
         seg.header().seqno=wrap(_next_seqno,_isn);
         seg.header().syn=(_next_seqno==0);
