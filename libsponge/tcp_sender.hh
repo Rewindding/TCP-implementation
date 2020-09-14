@@ -8,7 +8,6 @@
 
 #include <functional>
 #include <queue>
-
 //! \brief The "sender" part of a TCP implementation.
 
 //! Accepts a ByteStream, divides it up into segments and sends the
@@ -32,6 +31,32 @@ class TCPSender {
     //! the (absolute) sequence number for the next byte to be sent
     uint64_t _next_seqno{0};
 
+    //send base
+    uint64_t _send_base{0};
+
+    //total time passed since the tcp connection established
+    size_t _time_passed{0};
+
+    //consecutive retransmission times
+    size_t _consecutive_retransmission_time{0};
+
+    //window size
+    size_t _rcv_window_size{0};
+
+    //segments wait to be retransmit
+    std::queue<TCPSegment> _outstanding_segs{};
+
+    //is timer started
+    bool _timer_start{false};
+    
+    // time point of timer begin
+    size_t _timer{0};
+    
+    size_t _bytes_in_flight{0};
+
+    size_t _RTO{0};
+
+    bool _FIN_SET{false};
   public:
     //! Initialize a TCPSender
     TCPSender(const size_t capacity = TCPConfig::DEFAULT_CAPACITY,
