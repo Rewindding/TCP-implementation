@@ -12,9 +12,7 @@
 
 template <typename... Targs>
 void DUMMY_CODE(Targs &&... /* unused */) {}
-
 using namespace std;
-
 //! \param[in] capacity the capacity of the outgoing byte stream
 //! \param[in] retx_timeout the initial amount of time to wait before retransmitting the oldest outstanding segment
 //! \param[in] fixed_isn the Initial Sequence Number to use, if set (otherwise uses a random ISN)
@@ -27,8 +25,8 @@ uint64_t TCPSender::bytes_in_flight() const { return _bytes_in_flight; }
 
 void TCPSender::fill_window() {
     _rcv_window_size=max(_rcv_window_size,static_cast<size_t>(1));
-    while((!_stream.buffer_empty()&&_rcv_window_size>0)||_next_seqno==0||(!_FIN_SET&&_stream.input_ended())){
-        size_t seg_len=min(TCPConfig::MAX_PAYLOAD_SIZE,_rcv_window_size);
+    while(_rcv_window_size>0&&(!_stream.buffer_empty()||_next_seqno==0||(!_FIN_SET&&_stream.input_ended()))){
+        size_t seg_len=min(TCPConfig::MAX_PAYLOAD_SIZE7,_rcv_window_size);
         TCPSegment seg{};
         seg.header().seqno=wrap(_next_seqno,_isn);
         seg.header().syn=(_next_seqno==0);
