@@ -33,14 +33,15 @@ void TCPSender::fill_window() {
         seg_len-=(seg.header().syn?1:0);
         string payload=_stream.read(seg_len);
         seg.payload()=Buffer(move(payload));
-        if(payload=="1234567"){
+        seg_len-=payload.size();
+        if(seg_len>0) seg.header().fin=_stream.input_ended();
+        _FIN_SET=seg.header().fin;
+        if(seg.header().fin){
+            std::cout<<"payload:"<<payload<<"\n";
             std::cout<<"window_size"<<_rcv_window_size<<"\n";
             std::cout<<"seglen: "<<seg_len<<"\n";
             std::cout<<"fin: "<<_stream.input_ended()<<"\n";
         }
-        seg_len-=payload.size();
-        if(seg_len>0) seg.header().fin=_stream.input_ended();
-        _FIN_SET=seg.header().fin;
         _segments_out.push(seg);
         _outstanding_segs.push(seg);
         _rcv_window_size-=seg.length_in_sequence_space();
