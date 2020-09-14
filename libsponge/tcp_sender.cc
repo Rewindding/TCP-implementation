@@ -28,11 +28,6 @@ void TCPSender::fill_window() {
     //window size occupied=next_seq-send_base
     while(_next_seqno-_send_base<_rcv_window_size&&(!_stream.buffer_empty()||_next_seqno==0||(!_FIN_SET&&_stream.eof()))){
         size_t remain_size=_rcv_window_size-(_next_seqno-_send_base);
-        //cout<<"remain_size: "<<remain_size<<"\n";
-        // if(remain_size==5){
-        //     cout<<"_next_seqno:"<<_next_seqno<<" send_base: "<<_send_base<<"\n";
-        //     cout<<"_rcv_window_size: "<<_rcv_window_size<<"\n";
-        // }
         size_t seg_len=min(TCPConfig::MAX_PAYLOAD_SIZE,remain_size);
         TCPSegment seg{};
         seg.header().seqno=wrap(_next_seqno,_isn);
@@ -93,8 +88,10 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
         assert(!_outstanding_segs.empty());
         TCPSegment& retran_seg=_outstanding_segs.front();
         _segments_out.push(retran_seg);
-        _timer=_time_passed;//restart_timer
-        _RTO*=2;//报告里面说窗口size>0 才double???
+        if(_rcv_window_size>0){
+            _timer=_time_passed;//restart_timer
+            _RTO*=2;//报告里面说窗口size>0 才double???
+        }
         _consecutive_retransmission_time+=1;
     }
 }
