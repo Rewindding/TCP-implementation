@@ -56,7 +56,7 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
         TCPSegment& ack_seg=_sender.segments_out().front();
         //why should bare ack seg has a seqno? to make sure it's correctly received not falling out of the receiver's window
         ack_seg.header().ack=true;
-        ack_seg.header().ackno=_receiver.ackno();
+        ack_seg.header().ackno=_receiver.ackno().value();
         ack_seg.header().win=_receiver.window_size();
         _segments_out.push(ack_seg);
         _sender.segments_out().pop();
@@ -113,7 +113,7 @@ void TCPConnection::send_segment(){
             seg.header().ackno=_receiver.ackno();
         }
         //put window size for flow control
-        seg.header().win()=_receiver.window_size();
+        seg.header().win=_receiver.window_size();
         _segments_out.push(seg);
         sender_seg_que.pop();
     }
