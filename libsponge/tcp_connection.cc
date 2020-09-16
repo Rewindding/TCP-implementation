@@ -63,7 +63,7 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
     }
 
     //update the sender's info at the same time
-    if(seg.header().ack()){
+    if(seg.header().ack{
         bool ack_rcv = _sender.ack_received(seg.header().ackno,seg.header().win);
         if(!ack_rcv){
             //if ack get wrong what should do to correct the receiver?
@@ -110,7 +110,7 @@ void TCPConnection::send_segment(){
         TCPSegment& seg=sender_seg_que.front();
         if(_receiver.ackno().has_value()){//duplicate ack problem?
             seg.header().ack=true;
-            seg.header().ackno=_receiver.ackno();
+            seg.header().ackno=_receiver.ackno().value();
         }
         //put window size for flow control
         seg.header().win=_receiver.window_size();
