@@ -21,6 +21,10 @@ class TCPConnection {
     //! in case the remote TCPConnection doesn't know we've received its whole stream?
     bool _linger_after_streams_finish{true};
 
+    size_t _time_passed{0};
+
+    size_t _time_last_ack_rcvd{0};
+
   public:
     //! \name "Input" interface for the writer
     //!@{
@@ -79,6 +83,9 @@ class TCPConnection {
     //! after both streams have finished (e.g. to ACK retransmissions from the peer)
     bool active() const;
     //!@}
+
+    //get segment from TCPSender's _segments_out que and pop it
+    void send_segment();
 
     //! Construct a new connection from a configuration
     explicit TCPConnection(const TCPConfig &cfg) : _cfg{cfg} {}
