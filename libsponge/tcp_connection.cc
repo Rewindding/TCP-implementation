@@ -15,7 +15,7 @@ using namespace std;
 size_t TCPConnection::remaining_outbound_capacity() const { 
     size_t used=_sender.bytes_in_flight();
     if(used>=_sender.rcv_window_size()) return 0;
-    else return _sender.rcv_window_size-used; 
+    else return _sender.rcv_window_size()-used; 
 }
 
 size_t TCPConnection::bytes_in_flight() const { 
@@ -40,7 +40,7 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
 
     //is isn received, handle 3-way handshake here!
     if(!_receiver.syn_received()){
-        if(!seg.header().syn()) return;
+        if(!seg.header().syn) return;
         //receive this seg.
         _receiver.segment_received(seg);
         _sender.send_empty_segment();
@@ -53,12 +53,12 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
     if(!fall_in_window&&_receiver.ackno().has_value()){
         //send ack and window size immidiately to correct the remote sender
         _sender.send_empty_segment();
-        TCPSegment& seg=_sender.segments_out().front();
+        TCPSegment& ack_seg=_sender.segments_out().front();
         //why should bare ack seg has a seqno? to make sure it's correctly received not falling out of the receiver's window
-        seg.header().ack=true;
-        seg.header().ackno=_receiver.ackno();
-        seg.header().win=_receiver.window_size();
-        _segments_out.push(seg);
+        ack_seg.header().ack=true;
+        ack_seg.header().ackno=_receiver.ackno();
+        ack_seg.header().win=_receiver.window_size();
+        _segments_out.push(ack_seg);
         _sender.segments_out().pop();
     }
 
