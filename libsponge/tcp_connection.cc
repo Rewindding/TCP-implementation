@@ -63,7 +63,7 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
     }
 
     //update the sender's info at the same time
-    if(seg.header().ack{
+    if(seg.header().ack){
         bool ack_rcv = _sender.ack_received(seg.header().ackno,seg.header().win);
         if(!ack_rcv){
             //if ack get wrong what should do to correct the receiver?
