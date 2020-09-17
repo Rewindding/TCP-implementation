@@ -31,7 +31,7 @@ size_t TCPConnection::time_since_last_segment_received() const {
 void TCPConnection::segment_received(const TCPSegment &seg) {
     bool seg_acceptable=_receiver.segment_received(seg);
     //handle unclear shutdown
-    if(seg_acceptable&&seg.header().rst){
+    if(seg.header().rst){
         _sender.stream_in().set_error();
         _receiver.stream_out().set_error();
         _rst_set=true;
