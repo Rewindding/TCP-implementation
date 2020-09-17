@@ -25,6 +25,7 @@ class TCPConnection {
 
     size_t _time_last_ack_rcvd{0};
 
+    bool _rst_set{false};
   public:
     //! \name "Input" interface for the writer
     //!@{
@@ -86,7 +87,9 @@ class TCPConnection {
 
     //get segment from TCPSender's _segments_out que and pop it
     void send_segment();
-
+    
+    //send rst segment 
+    void send_rst();
     //! Construct a new connection from a configuration
     explicit TCPConnection(const TCPConfig &cfg) : _cfg{cfg} {}
 
