@@ -91,6 +91,7 @@ void TCPConnection::tick(const size_t ms_since_last_tick) {
         //shut down connection
         send_rst();
     }
+    send_segment();
 }
 
 void TCPConnection::end_input_stream() {
