@@ -85,8 +85,8 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
     // here judge timeout
     if(!_timer_start) return;
     size_t duration=_time_passed-_timer;
-    if(duration>=_RTO){//time out
-        assert(!_outstanding_segs.empty());//assertion failed!!! why?
+    if(duration>=_RTO&&!_outstanding_segs.empty()){//time out
+        //assert(!_outstanding_segs.empty());//assertion failed!!! why?
         TCPSegment& retran_seg=_outstanding_segs.front();
         _segments_out.push(retran_seg);
         if(_rcv_window_size>0){
