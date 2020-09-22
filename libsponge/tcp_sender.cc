@@ -69,13 +69,12 @@ bool TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
             auto last_index=unwrap(last_send_seg.header().seqno,_isn,_next_seqno)+last_send_seg.length_in_sequence_space()-1;
             if(last_index<ab_ack){
                 //_bytes_in_flight-=last_send_seg.length_in_sequence_space();
+                _timer=_time_passed;
                 _outstanding_segs.pop();
             }
             else break;
         }
-        if(!_outstanding_segs.empty()) {
-            _timer_start=false;//reset timer;
-        }
+        _timer_start=!_outstanding_segs.empty();
     }
     return true;
 }
@@ -91,7 +90,7 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
         cout<<"ms_since_last_tick: "<<ms_since_last_tick<<"\n";
         cout<<"timeout duration: "<<duration<<" rto: "<<_RTO<<"\n";
         if(_outstanding_segs.empty()){
-            cout<<"empty retrans queue\n";
+            cout<<"error: timeout but empty retrans queue\n";
             return;
         }
         TCPSegment& retran_seg=_outstanding_segs.front();
