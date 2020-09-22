@@ -19,21 +19,13 @@ class TCPConnection {
     //! Should the TCPConnection stay active (and keep ACKing)
     //! for 10 * _cfg.rt_timeout milliseconds after both streams have ended,
     //! in case the remote TCPConnection doesn't know we've received its whole stream?
-    bool _linger_after_streams_finish = true;
+    bool _linger_after_streams_finish{true};
 
-    size_t _time_since_last_received = 0;
+    size_t _time_passed{0};
 
-    bool _syn_received = false;
-    bool _syn_sent = false;
-    bool _rst_received = false;
-    bool _rst_sent = false;
+    size_t _time_last_ack_rcvd{0};
 
-    //! \brief Send segments in sender's queue
-    void _send_segments();
-
-    //! \brief Send RST segment
-    void _send_rst();
-
+    bool _rst_set{false};
   public:
     //! \name "Input" interface for the writer
     //!@{
@@ -93,6 +85,11 @@ class TCPConnection {
     bool active() const;
     //!@}
 
+    //get segment from TCPSender's _segments_out que and pop it
+    void send_segment();
+    
+    //send rst segment 
+    void send_rst();
     //! Construct a new connection from a configuration
     explicit TCPConnection(const TCPConfig &cfg) : _cfg{cfg} {}
 
