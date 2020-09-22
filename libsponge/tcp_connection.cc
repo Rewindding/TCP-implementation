@@ -68,14 +68,15 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
     send_segment();
     //(fin received&&!fin send)??
     if(_receiver.stream_out().input_ended()&&!_sender.fin_set()){
-        cout<<"not linger after finished\n";
-        cout<<"seg received: seqno:"<<seg.header().seqno.raw_value()<<'\n';
         _linger_after_streams_finish=false;
     }
 }
 
 bool TCPConnection::active() const { 
     bool clear_shutdown=_receiver.stream_out().eof()&&_sender.stream_in().eof()&&_sender.bytes_in_flight()==0&&(!_linger_after_streams_finish||time_since_last_segment_received()>=_cfg.rt_timeout*10);
+    cout<<"active: time_since_xxx"<<time_since_last_segment_received()<<'\n';
+    cout<<"linger after xx: "<<_linger_after_streams_finish<<'\n';
+    cout<<"clear_shundown: "<<clear_shutdown<<'\n';
     return !(clear_shutdown||_rst_set);
 }
 
