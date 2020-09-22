@@ -21,7 +21,7 @@ size_t TCPConnection::bytes_in_flight() const {
 }
 
 size_t TCPConnection::unassembled_bytes() const {     
-    return _sender.stream_in().buffer_size(); 
+    return _receiver.unassembled_bytes();
 }
 
 size_t TCPConnection::time_since_last_segment_received() const { 
