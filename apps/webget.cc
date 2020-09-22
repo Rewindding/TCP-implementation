@@ -8,7 +8,7 @@ using namespace std;
 
 void get_URL(const string &host, const string &path) {
     // Your code here.
-    cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
+    //cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
     TCPSocket socket{};
     Address address=Address(host,"http");
     socket.connect(address);
