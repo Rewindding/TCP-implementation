@@ -68,6 +68,8 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
     send_segment();
     //(fin received&&!fin send)??
     if(_receiver.stream_out().input_ended()&&!_sender.fin_set()){
+        cout<<"not linger after finished\n";
+        cout<<"seg received: seqno:"<<seg.header().seqno.raw_value()<<'\n';
         _linger_after_streams_finish=false;
     }
 }
