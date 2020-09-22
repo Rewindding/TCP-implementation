@@ -88,7 +88,8 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
     size_t duration=_time_passed-_timer;
     if(duration>=_RTO){//time out
         //assert(!_outstanding_segs.empty());//assertion failed!!! why?
-        cout<<"timeout duration: "<<duration<<"\n";
+        cout<<"ms_since_last_tick: "<<ms_since_last_tick<<"\n";
+        cout<<"timeout duration: "<<duration<<" rto: "<<_RTO<<"\n";
         if(_outstanding_segs.empty()){
             cout<<"empty retrans queue\n";
             return;
