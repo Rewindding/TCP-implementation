@@ -66,7 +66,8 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
         }
     }
     send_segment();
-    if(_receiver.stream_out().input_ended()&&!_sender.stream_in().eof()){
+    //(fin received&&!fin send)??
+    if(_receiver.stream_out().input_ended()&&!_sender.fin_set()){
         _linger_after_streams_finish=false;
     }
 }

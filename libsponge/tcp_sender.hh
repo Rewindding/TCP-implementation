@@ -120,6 +120,9 @@ class TCPSender {
     uint64_t rcv_window_size() const{
       return _rcv_window_size;
     }
+    bool fin_set() const{
+      return _FIN_SET;
+    }
 };
 
 #endif  // SPONGE_LIBSPONGE_TCP_SENDER_HH
