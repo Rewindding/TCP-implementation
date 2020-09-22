@@ -38,7 +38,7 @@ int main() {
         {
             TCPTestHarness test_2 = TCPTestHarness::in_closing(cfg);
 
-            test_2.execute(Tick(4 * cfg.rt_timeout));
+            test_2.execute(Tick(3 * cfg.rt_timeout));
             test_2.execute(ExpectOneSegment{}.with_fin(true));
 
             test_2.execute(ExpectState{State::CLOSING});
