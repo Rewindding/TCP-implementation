@@ -90,6 +90,11 @@ size_t TCPConnection::write(const string &data) {
 void TCPConnection::tick(const size_t ms_since_last_tick) { 
     _time_passed+=ms_since_last_tick;
     _sender.tick(ms_since_last_tick);
+    if(_sender.consecutive_retransmissions()>_cfg.MAX_RETX_ATTEMPTS){
+        //shut down connection
+        send_rst();
+        return;
+    }
     send_segment();
 }
 
