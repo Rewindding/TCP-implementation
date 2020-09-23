@@ -36,6 +36,8 @@ bool TCPReceiver::segment_received(const TCPSegment &seg) {
         cout<<"seq_start: "<<seqno_start<<" seq_end: "<<seqno_end<<"\n";
         cout<<"window_start: "<<window_start<<" window_end: "<<window_end<<"\n";
         cout<<"fall_in_window: "<<fall_in_window<<"\n";
+        auto t=max(seg.length_in_sequence_space()-1,static_cast<size_t>(0));
+        cout<<"seglen: "<<seg.length_in_sequence_space()<<" t:"<<t<<'\n';
     }
     if(!fall_in_window) {
         return false;
