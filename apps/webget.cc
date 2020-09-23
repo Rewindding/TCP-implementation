@@ -19,7 +19,7 @@ void get_URL(const string &host, const string &path) {
         cout << sock.read();
     }
     sock.close();
-    sock.wait_until_closed() 
+    sock.wait_until_closed();
     
     // You will need to connect to the "http" service on
     // the computer whose name is in the "host" string,
