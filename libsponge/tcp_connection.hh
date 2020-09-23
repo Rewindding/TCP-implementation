@@ -26,6 +26,10 @@ class TCPConnection {
     size_t _time_last_ack_rcvd{0};
 
     bool _rst_set{false};
+
+    bool _syn_send{false};
+
+    bool _syn_received{false};
   public:
     //! \name "Input" interface for the writer
     //!@{
