@@ -46,10 +46,7 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
         connect();
         return;
     }
-    if(seg.header().seqno.raw_value()==64001){
-        cout<<"acceptable: "<<seg_acceptable<<'\n';
-        cout<<"rcv ack: "<<_receiver.ackno().value()<<'\n';
-    }
+
     //out of window bound seg arrived
     if(!seg_acceptable){
         //send ack and window size immidiately to correct the remote sender
@@ -114,6 +111,9 @@ void TCPConnection::connect() {
 }
 
 void TCPConnection::send_segment(){
+    if(_sender.consecutive_retransmissions()>=_cfg.MAX_RETX_ATTEMPTS){
+        return;
+    }
     auto& sender_seg_que=_sender.segments_out();
     while(!sender_seg_que.empty()){
         //put ack at the same time, TCPSender it self did't know TCPReceiver's ackno
