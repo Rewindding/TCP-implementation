@@ -22,6 +22,7 @@ bool TCPReceiver::segment_received(const TCPSegment &seg) {
         }
         else return false;
     }
+    
     //else if(seg.header().syn) {return false;}//duplicate
     //absolute index 数据报文的起始字节编号和终止字节编号，包含fin和syn
     auto seqno_start=unwrap(seg.header().seqno,_isn,_checkpoint);
@@ -31,6 +32,11 @@ bool TCPReceiver::segment_received(const TCPSegment &seg) {
     auto window_end=window_start+max(window_size()-1,static_cast<size_t>(0));//if window size==0?
     //determine if it's out of range
     bool fall_in_window=(seqno_start<=window_end&&seqno_start>=window_start)||(seqno_end<=window_end&&seqno_end>=window_start);
+    if(seg.header().seqno.raw_value()==64001){
+        cout<<"seq_start: "<<seqno_start<<" seq_end: "<<seqno_end<<"\n";
+        cout<<"window_start: "<<window_start<<" window_end: "<<window_end<<"\n";
+        cout<<"fall_in_window: "<<fall_in_window<<"\n";
+    }
     if(!fall_in_window) {
         return false;
     }
