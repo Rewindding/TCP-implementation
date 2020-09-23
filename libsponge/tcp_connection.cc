@@ -90,11 +90,6 @@ size_t TCPConnection::write(const string &data) {
 void TCPConnection::tick(const size_t ms_since_last_tick) { 
     _time_passed+=ms_since_last_tick;
     _sender.tick(ms_since_last_tick);
-    if(_sender.consecutive_retransmissions()>=_cfg.MAX_RETX_ATTEMPTS){
-        //shut down connection
-        send_rst();
-        return;
-    }
     send_segment();
 }
 
@@ -112,6 +107,11 @@ void TCPConnection::connect() {
 }
 
 void TCPConnection::send_segment(){
+    if(_sender.consecutive_retransmissions()>=_cfg.MAX_RETX_ATTEMPTS){
+        //shut down connection
+        send_rst();
+        return;
+    }
     auto& sender_seg_que=_sender.segments_out();
     while(!sender_seg_que.empty()){
         //put ack at the same time, TCPSender it self did't know TCPReceiver's ackno
