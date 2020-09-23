@@ -26,19 +26,13 @@ bool TCPReceiver::segment_received(const TCPSegment &seg) {
     //else if(seg.header().syn) {return false;}//duplicate
     //absolute index 数据报文的起始字节编号和终止字节编号，包含fin和syn
     auto seqno_start=unwrap(seg.header().seqno,_isn,_checkpoint);
-    auto seqno_end=seqno_start+max(seg.length_in_sequence_space()-1,static_cast<size_t>(0));
+    auto seqno_end=(seg.length_in_sequence_space()==0)?seqno_start:seqno_start+seg.length_in_sequence_space()-1;
     auto window_start=unwrap(_ack,_isn,_checkpoint); 
     //window size==0的时候需要发送方持续发送数据，直到窗口size不等于0
-    auto window_end=window_start+max(window_size()-1,static_cast<size_t>(0));//if window size==0?
+    //auto window_end=window_start+max(window_size()-1,static_cast<size_t>(0));//if window size==0? overflow!
+    auto window_end=window_start+(window_size()==0?0:window_size()-1);
     //determine if it's out of range
     bool fall_in_window=(seqno_start<=window_end&&seqno_start>=window_start)||(seqno_end<=window_end&&seqno_end>=window_start);
-    if(seg.header().seqno.raw_value()==64001){
-        cout<<"seq_start: "<<seqno_start<<" seq_end: "<<seqno_end<<"\n";
-        cout<<"window_start: "<<window_start<<" window_end: "<<window_end<<"\n";
-        cout<<"fall_in_window: "<<fall_in_window<<"\n";
-        auto t=max(seg.length_in_sequence_space()-1,static_cast<size_t>(0));
-        cout<<"seglen: "<<seg.length_in_sequence_space()<<" t:"<<t<<'\n';
-    }
     if(!fall_in_window) {
         return false;
     }
