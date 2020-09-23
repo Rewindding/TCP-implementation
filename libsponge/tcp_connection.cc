@@ -113,10 +113,9 @@ void TCPConnection::connect() {
 }
 
 void TCPConnection::send_segment(){
-    auto& sender_seg_que=_sender.segments_out();
-    while(!sender_seg_que.empty()){
+    while(!_sender.segments_out().empty()){
         //put ack at the same time, TCPSender it self did't know TCPReceiver's ackno
-        TCPSegment& seg=sender_seg_que.front();
+        TCPSegment& seg=_sender.segments_out().front();
         if(_receiver.ackno().has_value()){//duplicate ack problem?
             seg.header().ack=true;
             seg.header().ackno=_receiver.ackno().value();
@@ -124,7 +123,7 @@ void TCPConnection::send_segment(){
         //put window size for flow control
         seg.header().win=_receiver.window_size();
         _segments_out.push(seg);
-        sender_seg_que.pop();
+        _sender.segments_out().pop();
     }
 }
 
@@ -134,13 +133,12 @@ void TCPConnection::send_rst(){
     _sender.send_empty_segment();
     TCPSegment& rst_seg=_sender.segments_out().front();
     rst_seg.header().rst=true;
-    assert(_receiver.ackno().has_value());
-    rst_seg.header().ack=true;
-    rst_seg.header().ackno=_receiver.ackno().value();
+    if(_receiver.ackno().has_value()){
+        rst_seg.header().ack=true;
+        rst_seg.header().ackno=_receiver.ackno().value();
+    }
     _segments_out.push(rst_seg);
     _sender.segments_out().pop();
-    
-    //send_segment();
     _rst_set=true;
 }
 
