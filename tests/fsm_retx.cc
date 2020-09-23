@@ -49,7 +49,7 @@ int main() {
                 test_1.execute(Tick((cfg.rt_timeout << i) - i));  // exponentially increasing delay length
                 test_1.execute(ExpectNoSegment{}, "test 1 failed: re-tx too fast after timeout");
                 test_1.execute(Tick(i));
-                check_segment(test_1, data, false, __LINE__);
+                check_segment(test_1, data, i!=TCPConfig::MAX_RETX_ATTEMPTS-1, __LINE__);
             }
 
             test_1.execute(ExpectState{State::ESTABLISHED});
