@@ -122,6 +122,9 @@ void TCPConnection::send_segment(){
         }
         //put window size for flow control
         seg.header().win=_receiver.window_size();
+        if(seg.header().rst){
+            cout<<"has ack: "<<_receiver.ackno().has_value()<<'\n';
+        }
         _segments_out.push(seg);
         sender_seg_que.pop();
     }
@@ -134,7 +137,6 @@ void TCPConnection::send_rst(){
     TCPSegment& rst_seg=_sender.segments_out().front();
     rst_seg.header().rst=true;
     send_segment();
-    cout<<"rst send\n";
     _rst_set=true;
 }
 
