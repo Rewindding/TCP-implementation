@@ -50,6 +50,7 @@ int main() {
                 test_1.execute(ExpectNoSegment{}, "test 1 failed: re-tx too fast after timeout");
                 test_1.execute(Tick(i));
                 check_segment(test_1, data, false, __LINE__);
+                cout<<i<<" passed\n";
             }
             cout<<"here0\n";
             test_1.execute(ExpectState{State::ESTABLISHED});
