@@ -47,10 +47,9 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
         return;
     }
     //out of window bound seg arrived
-    if(!seg_acceptable&&_receiver.ackno().has_value()){
+    if(!seg_acceptable){
         //send ack and window size immidiately to correct the remote sender
         _sender.send_empty_segment();
-        send_segment();
     }
     if(seg_acceptable&&seg.length_in_sequence_space()>0){
         _sender.send_empty_segment();//in case at least one ack seend back
