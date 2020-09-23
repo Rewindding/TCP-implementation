@@ -8,18 +8,7 @@ using namespace std;
 
 void get_URL(const string &host, const string &path) {
     // Your code here.
-    cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
-    TCPSocket socket{};
-    socket.connect(Address(host,"http"););
-    socket.write("GET "+path+" HTTP/1.1\r\n");
-    socket.write("Host: "+host+"\r\n");
-    socket.shutdown(SHUT_WR);
-    //这里立刻调用shutdown的目的？此时数据已经拿到了吗？
-    //TCP半关闭，单方面关闭连接，仍然可以接收另一端的数据
-    while(!socket.eof()){
-        cout<<socket.read();
-    }
-    socket.close();
+
     // You will need to connect to the "http" service on
     // the computer whose name is in the "host" string,
     // then request the URL path given in the "path" string.
@@ -27,8 +16,19 @@ void get_URL(const string &host, const string &path) {
     // Then you'll need to print out everything the server sends back,
     // (not just one call to read() -- everything) until you reach
     // the "eof" (end of file).
-    //shutdown 和 close 有什么区别？
-    //cerr << "Warning: get_URL() has not been implemented yet.\n";
+
+    TCPSocket sock{};
+
+    sock.connect(Address(host, "http"));
+    sock.write("GET " + path + " HTTP/1.1\r\n");
+    sock.write("Host: " + host + "\r\n");
+    sock.write("\r\n");
+    sock.shutdown(SHUT_WR);
+    while (!sock.eof()) {
+        cout << sock.read();
+    }
+    sock.close();
+    sock.wait_until_closed();
 }
 
 int main(int argc, char *argv[]) {
