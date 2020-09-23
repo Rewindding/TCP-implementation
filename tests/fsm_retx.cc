@@ -49,14 +49,14 @@ int main() {
                 test_1.execute(Tick((cfg.rt_timeout << i) - i));  // exponentially increasing delay length
                 test_1.execute(ExpectNoSegment{}, "test 1 failed: re-tx too fast after timeout");
                 test_1.execute(Tick(i));
-                check_segment(test_1, data, false, __LINE__);//最后一次循环过不了什么鬼？？？
+                check_segment(test_1, data, false, __LINE__);//最后一次循环过不了什么鬼？？？//条件写错，提前发了rst...
             }
 
             test_1.execute(ExpectState{State::ESTABLISHED});
 
             test_1.execute(Tick(1 + (cfg.rt_timeout << TCPConfig::MAX_RETX_ATTEMPTS)));
             test_1.execute(ExpectState{State::RESET});
-            test_1.execute(ExpectOneSegment{}.with_rst(true).with_ack(false).with_seqno(tx_ackno),
+            test_1.execute(ExpectOneSegment{}.with_rst(true).with_ack(false).with_seqno(tx_ackno),//为什么这个rst不能有ack??
                            "test 1 failed: RST on re-tx failure was malformed");
         }
     } catch (const exception &e) {
