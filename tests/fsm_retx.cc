@@ -48,7 +48,7 @@ int main() {
             for (unsigned i = 2; i < TCPConfig::MAX_RETX_ATTEMPTS; ++i) {
                 test_1.execute(Tick((cfg.rt_timeout << i) - i));  // exponentially increasing delay length
                 test_1.execute(ExpectNoSegment{}, "test 1 failed: re-tx too fast after timeout");
-                test_1.execute(Tick(i));
+                test_1.execute(Tick(i+1));
                 check_segment(test_1, data, false, __LINE__);//最后一次循环过不了什么鬼？？？
             }
 

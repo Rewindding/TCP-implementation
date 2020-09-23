@@ -94,7 +94,6 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
             _consecutive_retransmission_time+=1;
             _RTO*=2;//报告里面说窗口size>0 才double???
         }
-        cout<<"retrans, consecutive: "<<_consecutive_retransmission_time<<'\n';
         _timer=_time_passed;//restart_timer
     }
 }
