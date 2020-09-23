@@ -133,6 +133,7 @@ void TCPConnection::send_rst(){
     _sender.send_empty_segment();
     TCPSegment& rst_seg=_sender.segments_out().front();
     rst_seg.header().rst=true;
+    assert(_receiver.ackno().has_value());
     send_segment();
     _rst_set=true;
 }

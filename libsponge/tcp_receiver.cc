@@ -51,7 +51,6 @@ bool TCPReceiver::segment_received(const TCPSegment &seg) {
 }
 
 optional<WrappingInt32> TCPReceiver::ackno() const { 
-    cout<<"syn_received: "<<_syn_received<<'\n';
     if(!_syn_received) return nullopt;
     else{
         return _ack;
