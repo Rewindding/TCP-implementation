@@ -88,6 +88,7 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
     if(duration>=_RTO&&!_outstanding_segs.empty()){//time out
         //assert(!_outstanding_segs.empty());//assertion failed!!! why?
         if(_consecutive_retransmission_time>=TCPConfig::MAX_RETX_ATTEMPTS) return;
+        cout<<"retransmit\n";
         TCPSegment& retran_seg=_outstanding_segs.front();
         _segments_out.push(retran_seg);
         if(_rcv_window_size>0){
