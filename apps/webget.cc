@@ -9,17 +9,16 @@ using namespace std;
 void get_URL(const string &host, const string &path) {
     // Your code here.
     //cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
-    TCPSocket socket{};
-    Address address=Address(host,"http");
-    socket.connect(address);
-    string request="GET "+path+" HTTP/1.1\r\nHost: "+host+"\r\n\r\n";
-    socket.write(request);
-    socket.shutdown(SHUT_WR);
-    //这里立刻调用shutdown的目的？此时数据已经拿到了吗？
-    while(!socket.eof()){
-        string str=socket.read();
-        cout<<str;
+    TCPSocket sock{};
+    sock.connect(Address(host, "http"));
+    sock.write("GET " + path + " HTTP/1.1\r\n");
+    sock.write("Host: " + host + "\r\n");
+    sock.write("\r\n");
+    sock.shutdown(SHUT_WR);
+    while (!sock.eof()) {
+        cout << sock.read();
     }
+    sock.close();
     
     // You will need to connect to the "http" service on
     // the computer whose name is in the "host" string,
