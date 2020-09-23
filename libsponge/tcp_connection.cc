@@ -46,6 +46,10 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
         connect();
         return;
     }
+    if(seg.header().seqno.raw_value==64001){
+        cout<<"acceptable: "<<seg_acceptable<<'\n';
+        cout<<"rcv ack: "<<_receiver.ackno().value()<<'\n';
+    }
     //out of window bound seg arrived
     if(!seg_acceptable){
         //send ack and window size immidiately to correct the remote sender
