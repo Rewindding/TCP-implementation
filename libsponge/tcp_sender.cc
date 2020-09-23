@@ -89,14 +89,12 @@ void TCPSender::tick(const size_t ms_since_last_tick) {
         //assert(!_outstanding_segs.empty());//assertion failed!!! why?
         if(_consecutive_retransmission_time>=TCPConfig::MAX_RETX_ATTEMPTS) return;
         TCPSegment& retran_seg=_outstanding_segs.front();
-        cout<<"before _segquesize: "<<_segments_out.size();
         _segments_out.push(retran_seg);
         if(_rcv_window_size>0){
-            _timer=_time_passed;//restart_timer
+            _consecutive_retransmission_time+=1;
             _RTO*=2;//报告里面说窗口size>0 才double???
         }
-        cout<<"end _segquesize: "<<_segments_out.size()<<'\n';
-        _consecutive_retransmission_time+=1;
+        _timer=_time_passed;//restart_timer
     }
 }
 
