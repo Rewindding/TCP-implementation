@@ -51,13 +51,16 @@ int main() {
                 test_1.execute(Tick(i));
                 check_segment(test_1, data, false, __LINE__);
             }
-
+            cout<<"here0\n";
             test_1.execute(ExpectState{State::ESTABLISHED});
-
+            cout<<"here1\n";
             test_1.execute(Tick(1 + (cfg.rt_timeout << TCPConfig::MAX_RETX_ATTEMPTS)));
+            cout<<"here2\n";
             test_1.execute(ExpectState{State::RESET});
+            cout<<"here3\n";
             test_1.execute(ExpectOneSegment{}.with_rst(true).with_ack(false).with_seqno(tx_ackno),
                            "test 1 failed: RST on re-tx failure was malformed");
+            cout<<"here4\n";
         }
     } catch (const exception &e) {
         cerr << e.what() << endl;
