@@ -111,9 +111,6 @@ void TCPConnection::connect() {
 }
 
 void TCPConnection::send_segment(){
-    if(_sender.consecutive_retransmissions()>=_cfg.MAX_RETX_ATTEMPTS){
-        return;
-    }
     auto& sender_seg_que=_sender.segments_out();
     while(!sender_seg_que.empty()){
         //put ack at the same time, TCPSender it self did't know TCPReceiver's ackno
