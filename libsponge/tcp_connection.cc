@@ -46,7 +46,7 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
         connect();
         return;
     }
-    if(seg.header().seqno.raw_value==64001){
+    if(seg.header().seqno.raw_value()==64001){
         cout<<"acceptable: "<<seg_acceptable<<'\n';
         cout<<"rcv ack: "<<_receiver.ackno().value()<<'\n';
     }
